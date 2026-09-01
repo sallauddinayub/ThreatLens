@@ -1,4 +1,4 @@
-# ThreatLens - AI-Assisted Threat Modeling and Automated Security Test Generation
+# ThreatLens: AI-Assisted Threat Modeling and Automated Security Test Generation
 
 M.Tech Cybersecurity capstone project. ThreatLens is an AI-assisted
 cybersecurity platform that combines deterministic threat modeling,

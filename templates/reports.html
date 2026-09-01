@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Reports - ThreatLens{% endblock %}
+{% block content %}
+<p class="subtitle" style="font-size:14px;margin-bottom:16px;">
+  Generate a report covering the executive summary, asset inventory, threat model, STRIDE analysis, attack
+  scenarios, security tests, results, evidence, risk prioritization, standards mapping, and full
+  threat-to-test traceability.
+</p>
+
+{% if not project %}
+  <p style="color:var(--navy-600);margin-top:16px;">Select or create a project in Settings first.</p>
+{% else %}
+  <div style="max-width:600px;margin-top:20px;">
+    {% for fmt, label, desc in formats %}
+    <div class="panel panel-body" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-weight:500;font-size:13px;">{{ label }}</div>
+        <div style="font-size:12px;color:var(--navy-600);margin-top:3px;">{{ desc }}</div>
+      </div>
+      <a class="btn btn-primary" href="/reports/download/{{ fmt }}">Download</a>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

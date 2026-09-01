@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+  title: Vulnerable Demo Shop
+  version: "1.0"
+paths:
+  /login:
+    post:
+      summary: Authenticate and receive a token
+      responses:
+        "200":
+          description: token issued
+  /orders/{order_id}:
+    get:
+      summary: Retrieve an order by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: order detail
+  /orders/{order_id}/apply-coupon:
+    post:
+      summary: Apply a discount coupon to an order
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: updated order
+  /admin/users:
+    post:
+      summary: Create a user (admin only — intentionally under-enforced for the demo)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: user created
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

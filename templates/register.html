@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="azure">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - ThreatLens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <script>
+    (function () {
+      var theme = localStorage.getItem("tm_theme") || "azure";
+      if (theme !== "lavender") theme = "azure";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+</head>
+<body>
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--canvas);padding:20px;">
+    <div class="panel" style="width:100%;max-width:400px;padding:36px 32px;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div class="sidebar-logo-dot" style="margin:0 auto 14px;width:52px;height:52px;border-radius:14px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5L4.5 5.5V11.2C4.5 16.4 7.9 21.2 12 22.5C16.1 21.2 19.5 16.4 19.5 11.2V5.5L12 2.5Z"
+                  stroke="white" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M8.7 12.1L10.8 14.2L15.3 9.4" stroke="white" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="threatlens-logo-text" style="font-size:24px;font-weight:700;font-family:'IBM Plex Sans',sans-serif;">ThreatLens</div>
+      </div>
+
+      <h1 style="font-size:16px;text-align:center;margin-bottom:20px;">Create your account</h1>
+      <p style="font-size:11.5px;color:var(--navy-500);text-align:center;margin-top:-14px;margin-bottom:18px;">
+        New accounts are created with standard USER access. Contact an administrator for elevated access.
+      </p>
+
+      {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+      <form method="post" action="/register">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="field">
+          <label class="field-label" for="full_name">Full name (optional)</label>
+          <input type="text" id="full_name" name="full_name" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="email">Email</label>
+          <input type="email" id="email" name="email" required autofocus autocomplete="username" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="password">Password (min 8 characters)</label>
+          <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" />
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:6px;">Create Account</button>
+      </form>
+
+      <div style="text-align:center;margin-top:16px;font-size:12.5px;color:var(--navy-500);">
+        Already have an account? <a href="/login" style="color:var(--accent-600);">Sign in</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

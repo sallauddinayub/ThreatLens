@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.title }} - Knowledge Base - ThreatLens{% endblock %}
+{% block content %}
+
+<a href="/knowledge-base" style="font-size:12px;color:var(--accent-600);">&larr; Knowledge base</a>
+
+<div style="margin-top:10px;margin-bottom:20px;">
+  <h1>{{ doc.title }}</h1>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+    <span class="badge badge-rag">{{ doc.source }}</span>
+    {% if doc.identifier %}<span class="mono" style="font-size:12px;color:var(--navy-600);">{{ doc.identifier }}</span>{% endif %}
+  </div>
+</div>
+
+<div class="panel panel-body">
+  <p style="font-size:13.5px;line-height:1.6;">{{ doc.content }}</p>
+  {% if doc.url %}
+  <p style="margin-top:14px;font-size:12px;">
+    <a href="{{ doc.url }}" target="_blank" rel="noopener" style="color:var(--accent-600);">View authoritative source &rarr;</a>
+  </p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header">
+    <h2>Cited by threats in this project</h2>
+    <span style="font-size:11px;color:var(--navy-500);">{{ citing_threats|length }} threat(s)</span>
+  </div>
+  {% if not project %}
+  <p style="padding:18px;color:var(--navy-500);font-size:13px;">Select a project to see which threats cite this source.</p>
+  {% elif citing_threats %}
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Title</th><th>STRIDE</th><th>Risk Level</th></tr></thead>
+    <tbody>
+      {% for t in citing_threats %}
+      <tr>
+        <td class="mono">{{ t.display_id }}</td>
+        <td><a href="/threats/{{ t.id }}" style="color:var(--navy-800);font-weight:500;">{{ t.title }}</a></td>
+        <td>{{ t.stride_category.value }}</td>
+        <td>{% if t.risk_assessment %}<span class="badge badge-risk risk-{{ t.risk_assessment.risk_level.value }}">{{ t.risk_assessment.risk_level.value }}</span>{% else %}-{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="padding:18px;color:var(--navy-500);font-size:13px;">No threats in this project currently cite this source. This can mean either it genuinely doesn't apply to your system, or RAG grounding was unavailable when the threat model was generated (mock mode / vector store not installed).</p>
+  {% endif %}
+</div>
+
+{% endblock %}

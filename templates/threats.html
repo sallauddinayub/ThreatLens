@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Threat Modeling - ThreatLens{% endblock %}
+{% block content %}
+
+{% if not project %}
+  <p style="color:var(--navy-600);">Select or create a project in <a href="/settings" style="color:var(--accent-600);">Settings</a> first.</p>
+{% else %}
+  <div class="page-header">
+    <div><div class="subtitle" style="font-size:14px;">{{ threats|length }} threats identified{% if search_q %} matching "{{ search_q }}"{% endif %}</div></div>
+    <form method="get" style="display:flex;gap:8px;">
+      <select name="risk" onchange="this.form.submit()">
+        <option value="All" {% if risk_filter == "All" %}selected{% endif %}>All risk levels</option>
+        {% for level in ["Critical", "High", "Medium", "Low", "Informational"] %}
+        <option value="{{ level }}" {% if risk_filter == level %}selected{% endif %}>{{ level }}</option>
+        {% endfor %}
+      </select>
+      <select name="stride" onchange="this.form.submit()">
+        <option value="All" {% if stride_filter == "All" %}selected{% endif %}>All STRIDE categories</option>
+        {% for cat in stride_options %}
+        <option value="{{ cat }}" {% if stride_filter == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <select name="sort" onchange="this.form.submit()">
+        <option value="risk" {% if sort_by == "risk" %}selected{% endif %}>Sort by risk</option>
+        <option value="id" {% if sort_by == "id" %}selected{% endif %}>Sort by ID</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="panel" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead><tr>
+        <th>ID</th><th>Title</th><th>STRIDE</th><th>Affected Asset</th><th>Likelihood</th>
+        <th>Impact</th><th>Risk Score</th><th>Risk Level</th><th>Mapping</th>
+      </tr></thead>
+      <tbody>
+        {% for t in threats %}
+        <tr>
+          <td class="mono">{{ t.display_id }}</td>
+          <td><a href="/threats/{{ t.id }}" style="font-weight:500;color:var(--navy-800);">{{ t.title }}</a></td>
+          <td><span class="badge badge-stride-{{ t.stride_initial }}">{{ t.stride_initial }}</span> {{ t.stride_category }}</td>
+          <td>{{ t.affected_asset or "-" }}</td>
+          <td>{{ t.likelihood }}</td>
+          <td>{{ t.impact }}</td>
+          <td class="mono">{{ "%.2f" | format(t.risk_score) }}</td>
+          <td><span class="badge badge-risk risk-{{ t.risk_level or 'Informational' }}">{{ t.risk_level or "Informational" }}</span></td>
+          <td class="mono" style="font-size:11px;color:var(--navy-500);">{{ t.mapping or "-" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" style="text-align:center;color:var(--navy-500);padding:32px;">No threats match this filter.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock %}

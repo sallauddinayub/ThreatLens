@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}{{ threat.title }} - ThreatLens{% endblock %}
+{% block content %}
+
+<a href="/threats" style="font-size:12px;color:var(--accent-600);">&larr; All threats</a>
+
+<div style="margin-top:10px;margin-bottom:20px;">
+  <h1><span class="mono" style="color:var(--navy-500);margin-right:8px;">{{ threat.display_id }}</span>{{ threat.title }}</h1>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+    <span class="badge badge-stride-{{ stride_initial }}">{{ stride_initial }} {{ threat.stride_category.value }}</span>
+    <span style="font-size:13px;color:var(--navy-600);">Affects: {{ threat.affected_asset.name if threat.affected_asset else "-" }}</span>
+    <a href="/traceability" style="font-size:12px;color:var(--accent-600);margin-left:auto;">View full traceability chain &rarr;</a>
+  </div>
+</div>
+
+<!-- compact chain view: Asset -> Threat -> STRIDE -> Risk, the rest is per-test below -->
+<div class="panel panel-body" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;">
+  <span class="badge" style="background: var(--chip-bg);">{{ threat.affected_asset.name if threat.affected_asset else "Unassigned" }}</span>
+  <span style="color:var(--navy-400);">&rarr;</span>
+  <span class="badge" style="background: var(--chip-bg);">{{ threat.display_id }}</span>
+  <span style="color:var(--navy-400);">&rarr;</span>
+  <span class="badge badge-stride-{{ stride_initial }}">{{ threat.stride_category.value }}</span>
+  <span style="color:var(--navy-400);">&rarr;</span>
+  <span class="badge" style="background: var(--chip-bg);">{{ threat.attack_scenarios|length }} scenario(s)</span>
+  <span style="color:var(--navy-400);">&rarr;</span>
+  {% set total_tests = threat.attack_scenarios | map(attribute='security_tests') | map('length') | sum %}
+  <span class="badge" style="background: var(--chip-bg);">{{ total_tests }} test(s)</span>
+  <span style="color:var(--navy-400);">&rarr;</span>
+  {% if threat.risk_assessment %}
+    <span class="badge badge-risk risk-{{ threat.risk_assessment.risk_level.value }}">{{ threat.risk_assessment.risk_level.value }} risk</span>
+  {% else %}
+    <span style="color:var(--navy-500);">not yet scored</span>
+  {% endif %}
+</div>
+
+<div class="panel panel-body">
+  <h2 style="color:var(--navy-600);margin-bottom:10px;">Description</h2>
+  <p style="font-size:13px;">{{ threat.description }}</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:14px;font-size:13px;">
+    <div><div style="font-size:11px;text-transform:uppercase;color:var(--navy-500);">Likelihood</div>{{ threat.likelihood }}</div>
+    <div><div style="font-size:11px;text-transform:uppercase;color:var(--navy-500);">Impact</div>{{ threat.impact }}</div>
+    <div><div style="font-size:11px;text-transform:uppercase;color:var(--navy-500);">Confidence</div>{{ (threat.confidence * 100) | round | int }}%</div>
+    <div style="grid-column:span 2;"><div style="font-size:11px;text-transform:uppercase;color:var(--navy-500);">Mitigation</div>{{ threat.recommended_mitigation or "-" }}</div>
+  </div>
+</div>
+
+<div class="panel panel-body">
+  <h2 style="color:var(--accent-cyan);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    Retrieved Knowledge
+  </h2>
+  <p style="font-size:11px;color:var(--navy-500);margin-bottom:10px;">Documents actually retrieved from the OWASP/CWE/MITRE ATT&amp;CK knowledge base for this threat - factual citations, not AI-generated text.</p>
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+    {% if threat.owasp_category %}<a href="/knowledge-base?q={{ threat.owasp_category }}" class="badge mono badge-rag">{{ threat.owasp_category }}</a>{% endif %}
+    {% if threat.cwe_id %}<a href="/knowledge-base?q={{ threat.cwe_id }}" class="badge mono badge-rag">{{ threat.cwe_id }}</a>{% endif %}
+    {% if threat.mitre_attack_technique %}<a href="/knowledge-base?q={{ threat.mitre_attack_technique }}" class="badge mono badge-rag">{{ threat.mitre_attack_technique }}</a>{% endif %}
+    {% if not threat.owasp_category and not threat.cwe_id and not threat.mitre_attack_technique %}
+      <span style="font-size:12px;color:var(--navy-500);">
+        {% if not rag_available %}
+          &#9888; RAG knowledge retrieval unavailable - the vector store (chromadb) isn't installed in this environment, so no sources could be retrieved for this threat.
+        {% else %}
+          No standards mapping retrieved from the knowledge base for this threat.
+        {% endif %}
+      </span>
+    {% endif %}
+  </div>
+  {% if threat.rag_sources %}
+  <div>
+    <div style="font-size:11px;font-weight:600;color:var(--navy-600);margin-bottom:4px;">Source documents</div>
+    <ul style="font-size:12px;color:var(--navy-600);margin:0;padding-left:18px;">
+      {% for s in threat.rag_sources %}<li>{{ s.source }} - {{ s.title }}{% if s.identifier %} ({{ s.identifier }}){% endif %}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+
+<div class="panel panel-body">
+  <h2 style="color:var(--accent-indigo);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a5 5 0 00-5 5c0 2.4 1.5 3.5 2 5 .3.9.3 2 .3 2h5.4s0-1.1.3-2c.5-1.5 2-2.6 2-5a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 18h5M10 21h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    AI Analysis
+  </h2>
+  <p style="font-size:11px;color:var(--navy-500);margin-bottom:10px;">The LLM's own reasoning for this threat - generated commentary, distinct from the factual citations above.</p>
+  <p style="font-size:13px;">{{ threat.reasoning_summary or "No reasoning summary recorded." }}</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header"><h2>Attack Scenarios</h2></div>
+  {% for s in threat.attack_scenarios %}
+  <div class="panel-body" style="border-top:1px solid var(--border);font-size:13px;">
+    <div style="font-weight:500;">{{ s.objective }}</div>
+    <div style="color:var(--navy-600);margin-top:4px;">{{ s.scenario_narrative }}</div>
+    <div style="font-size:11px;color:var(--navy-500);margin-top:6px;">Expected secure behavior: {{ s.expected_secure_behavior }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panel">
+  <div class="panel-header"><h2>Generated Security Tests &rarr; Execution &rarr; Evidence</h2></div>
+
+  {% if not project.authorized_for_active_testing %}
+  <div class="alert alert-warn" style="margin:14px 18px;">
+    This project is not yet authorized for active testing. <a href="/settings" style="color:inherit;text-decoration:underline;">Authorize it in Settings</a> before you can approve/execute tests.
+  </div>
+  {% endif %}
+  <div style="margin:0 18px 14px 18px;font-size:11px;color:var(--navy-500);">
+    Point "base URL" at whatever authorized target you listed in Settings - your own app running locally,
+    a staging environment, or the optional demo_app practice target (<code>http://localhost:8081</code> if you started it).
+  </div>
+
+  {% for s in threat.attack_scenarios %}
+    {% for t in s.security_tests %}
+    {% set executions_sorted = executions_by_test.get(t.id, []) %}
+    {% set latest_execution = executions_sorted[-1] if executions_sorted else None %}
+    <div class="panel-body" style="border-top:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div><span class="mono" style="color:var(--navy-500);margin-right:6px;">{{ t.display_id }}</span><span style="font-weight:500;font-size:13px;">{{ t.objective }}</span></div>
+        <span class="badge status-{{ t.validation_status.value.replace(' ', '_') }}">{{ t.validation_status.value }}</span>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/approve" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button class="btn btn-secondary" type="submit" {% if t.validation_status.value != "VALID" or t.approved %}disabled{% endif %} style="padding:5px 10px;font-size:12px;">
+            {{ "Approved" if t.approved else "Approve" }}
+          </button>
+        </form>
+
+        {% if not latest_execution %}
+        <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/execute" style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="text" name="base_url" value="" placeholder="http://localhost:PORT" style="width:190px;padding:5px 8px;font-size:12px;" />
+          <input type="text" name="endpoint_override" value="{{ t.endpoint or '' }}" title="Auto-generated path — edit if it doesn't match a real route on your target" placeholder="/orders/o1" style="width:160px;padding:5px 8px;font-size:12px;" />
+          <input type="text" name="auth_token" value="" placeholder="Bearer token (optional)" style="width:140px;padding:5px 8px;font-size:12px;" />
+          <button class="btn btn-primary" type="submit" {% if not t.approved or not project.authorized_for_active_testing %}disabled{% endif %} style="padding:5px 10px;font-size:12px;">
+            Execute
+          </button>
+        </form>
+        {% else %}
+        <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/retest" style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="text" name="base_url" value="" placeholder="http://localhost:PORT" style="width:190px;padding:5px 8px;font-size:12px;" />
+          <input type="text" name="endpoint_override" value="{{ t.endpoint or '' }}" title="Auto-generated path — edit if it doesn't match a real route on your target" placeholder="/orders/o1" style="width:160px;padding:5px 8px;font-size:12px;" />
+          <input type="text" name="auth_token" value="" placeholder="Bearer token (optional)" style="width:140px;padding:5px 8px;font-size:12px;" />
+          <button class="btn btn-primary" type="submit" {% if not project.authorized_for_active_testing %}disabled{% endif %} style="padding:5px 10px;font-size:12px;">
+            Re-test
+          </button>
+        </form>
+        {% endif %}
+      </div>
+
+      {% if executions_sorted %}
+      <div style="margin-top:10px;">
+        {% for ex in executions_sorted %}
+        <div style="font-size:12px;color:var(--navy-600);display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <a href="/executions/{{ ex.id }}/evidence" class="badge status-{{ ex.status.value.replace(' ', '_') }}">{{ ex.status.value }}</a>
+          <span>HTTP {{ ex.response_status or "-" }}</span>
+          <span style="color:var(--navy-500);">{{ (ex.finished_at | ist("%b %d %H:%M")) if ex.finished_at else "" }}</span>
+          <a href="/executions/{{ ex.id }}/evidence" style="color:var(--accent-600);">View evidence &rarr;</a>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Remediation workflow: reflects the current RemediationStatus, including manual terminal states -->
+      {% set latest_remediation = t.remediations | sort(attribute='created_at') | list | last %}
+      {% if latest_execution and latest_execution.status.value == "FAILED" and (not latest_remediation or latest_remediation.status.value in ["Open", "In Remediation", "Retest Required"]) %}
+        <div style="margin-top:12px;padding:12px;border:1px solid #fecdd3;background:#fff1f2;border-radius:8px;">
+          <div style="font-size:12px;font-weight:600;color:#be123c;margin-bottom:8px;">Vulnerability confirmed - log a remediation, then re-test to verify the fix</div>
+          <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/remediate" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="text" name="description" placeholder="What was changed to fix this? (e.g. added ownership check on GET /orders/:id)" style="flex:1;" />
+            <button class="btn btn-secondary" type="submit" style="padding:6px 12px;font-size:12px;white-space:nowrap;">Log remediation</button>
+          </form>
+          <div style="display:flex;gap:8px;">
+            <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/mark-status">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="status" value="Accepted Risk" />
+              <button class="btn btn-secondary" type="submit" style="padding:4px 10px;font-size:11px;">Accept risk</button>
+            </form>
+            <form method="post" action="/threats/{{ threat.id }}/tests/{{ t.id }}/mark-status">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="status" value="False Positive" />
+              <button class="btn btn-secondary" type="submit" style="padding:4px 10px;font-size:11px;">Mark false positive</button>
+            </form>
+          </div>
+        </div>
+      {% elif latest_remediation and latest_remediation.status.value == "Fixed" %}
+        <div style="margin-top:12px;padding:12px;border:1px solid #a7f3d0;background:#ecfdf5;border-radius:8px;">
+          <div style="font-size:12px;color:#047857;font-weight:600;margin-bottom:4px;">Verified secure as of the most recent re-test.</div>
+          {% if latest_remediation.risk_score_before is not none and latest_remediation.risk_score_after is not none %}
+          {% set reduction_pct = ((latest_remediation.risk_score_before - latest_remediation.risk_score_after) / latest_remediation.risk_score_before * 100) | round | int %}
+          <div style="display:flex;gap:20px;font-size:12px;color:var(--navy-700);margin-top:6px;">
+            <div><span style="color:var(--navy-500);">Before:</span> <strong>{{ "%.2f" | format(latest_remediation.risk_score_before) }}</strong></div>
+            <div><span style="color:var(--navy-500);">After:</span> <strong>{{ "%.2f" | format(latest_remediation.risk_score_after) }}</strong></div>
+            <div><span style="color:var(--navy-500);">Risk reduction:</span> <strong style="color:#047857;">{{ reduction_pct }}%</strong></div>
+          </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if t.remediations %}
+      <div style="margin-top:10px;">
+        <div style="font-size:11px;font-weight:600;color:var(--navy-600);margin-bottom:6px;">Remediation history</div>
+        {% for r in t.remediations | sort(attribute='created_at', reverse=True) %}
+        <div style="font-size:12px;color:var(--navy-700);display:flex;align-items:start;gap:8px;margin-bottom:4px;">
+          <span class="badge {% if r.status.value == 'Fixed' %}status-VALID{% elif r.status.value in ['Retest Required'] %}status-INVALID{% elif r.status.value == 'False Positive' %}status-PENDING{% elif r.status.value == 'Accepted Risk' %}status-NEEDS_REVIEW{% else %}status-NEEDS_REVIEW{% endif %}" style="flex-shrink:0;">{{ r.status.value }}</span>
+          <span>{{ r.description }} <span style="color:var(--navy-500);">- {{ r.created_at | ist("%b %d, %H:%M") }}{% if r.resolved_at %}, resolved {{ r.resolved_at | ist("%b %d, %H:%M") }}{% endif %}</span></span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+
+{% endblock %}

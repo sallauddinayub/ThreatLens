@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}System Analysis - ThreatLens{% endblock %}
+{% block content %}
+<p class="subtitle" style="font-size:14px;">Structured system model extracted by the System Analysis step. Run the pipeline from <a href="/settings" style="color:var(--accent-600);">Settings</a> to (re)generate it.</p>
+
+{% if not project %}
+  <p style="color:var(--navy-600);margin-top:16px;">Select or create a project in Settings first.</p>
+{% elif system_model %}
+  <pre class="panel mono" style="padding:16px;font-size:12px;overflow:auto;max-height:70vh;margin-top:16px;background: var(--surface-2);">{{ system_model_json }}</pre>
+{% else %}
+  <div class="empty-state panel"><p>No system model yet - run the pipeline to generate one.</p></div>
+{% endif %}
+{% endblock %}

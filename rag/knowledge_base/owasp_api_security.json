@@ -1,0 +1,142 @@
+[
+  {
+    "source": "OWASP",
+    "title": "Broken Object Level Authorization",
+    "identifier": "API1",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/",
+    "content": "APIs frequently expose endpoints that operate on an object identifier such as a user ID or order ID. When the API trusts a client-supplied identifier without independently verifying that the requesting principal owns or is entitled to that specific object, an attacker can substitute a different identifier and access or modify another user's data. This class of flaw is commonly called an Insecure Direct Object Reference or Broken Object Level Authorization. Mitigation requires enforcing an authorization check on every object-scoped request, ideally based on server-side session context rather than the client-supplied identifier, and returning identical 403/404 responses whether or not the object exists to avoid leaking existence information."
+  },
+  {
+    "source": "OWASP",
+    "title": "Broken Authentication",
+    "identifier": "API2",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa2-broken-authentication/",
+    "content": "Authentication mechanisms protecting an API are often implemented incorrectly, allowing attackers to compromise authentication tokens or exploit implementation flaws to assume other users' identities. Weaknesses include permitting credential stuffing without rate limiting, accepting weak or unsigned tokens, exposing API keys in URLs, and failing to invalidate sessions or tokens properly. Strong mitigation includes short-lived signed tokens, rate limiting and lockouts on authentication endpoints, and never transmitting credentials or tokens in query strings."
+  },
+  {
+    "source": "OWASP",
+    "title": "Broken Object Property Level Authorization",
+    "identifier": "API3",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa3-broken-object-property-level-authorization/",
+    "content": "Even when object-level authorization is correctly enforced, an API can still expose or allow modification of individual object properties that the requesting user should not be able to read or write, such as an internal role field or another user's balance. This often arises from mass-assignment patterns where client-supplied JSON is bound directly to an internal model without an allowlist of permitted fields. Mitigation requires explicit allowlisting of readable and writable properties per role."
+  },
+  {
+    "source": "OWASP",
+    "title": "Unrestricted Resource Consumption",
+    "identifier": "API4",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/",
+    "content": "APIs that do not constrain the number, size, or rate of requests a client can make are vulnerable to resource-exhaustion attacks that degrade availability or inflate operating costs. Typical gaps include missing pagination limits, no maximum payload size, and no per-client rate limiting. Mitigation includes enforcing rate limits, request size caps, and timeouts at the gateway layer."
+  },
+  {
+    "source": "OWASP",
+    "title": "Broken Function Level Authorization",
+    "identifier": "API5",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/",
+    "content": "Complex role hierarchies and administrative functions are frequently exposed on the same routes as regular user functions, distinguished only by client-side logic. If the server does not independently verify that the caller's role permits the requested function, a regular user can invoke administrative operations by calling the endpoint directly. Mitigation requires centralized, deny-by-default authorization checks evaluated server-side for every function."
+  },
+  {
+    "source": "OWASP",
+    "title": "Server Side Request Forgery",
+    "identifier": "API7",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa7-server-side-request-forgery/",
+    "content": "Server-Side Request Forgery occurs when an API fetches a remote resource without validating the user-supplied URL, allowing an attacker to coerce the server into issuing requests to internal, otherwise unreachable systems or to unintended external hosts. Mitigation includes strict allowlisting of destination hosts/schemes, disabling redirects, and network segmentation so the API server cannot reach sensitive internal endpoints."
+  },
+  {
+    "source": "OWASP",
+    "title": "Security Misconfiguration",
+    "identifier": "API8",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa8-security-misconfiguration/",
+    "content": "APIs often ship with unnecessary HTTP methods enabled, verbose error messages that leak stack traces, permissive CORS policies, or missing security headers such as HSTS and Content-Security-Policy. These are typically detectable through automated configuration checks. Mitigation is a hardened, repeatable deployment baseline with security headers enforced and verbose diagnostic output disabled in production."
+  },
+  {
+    "source": "OWASP",
+    "title": "Improper Inventory Management",
+    "identifier": "API9",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa9-improper-inventory-management/",
+    "content": "Organizations frequently lose track of older API versions or debug/staging endpoints left reachable in production, which may lack the security controls applied to the current version. Mitigation requires maintaining an accurate, current inventory of all hosts and API versions and decommissioning or securing every legacy endpoint."
+  },
+  {
+    "source": "OWASP",
+    "title": "Unrestricted Access to Sensitive Business Flows",
+    "identifier": "API6",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xa6-unrestricted-access-to-sensitive-business-flows/",
+    "content": "Some API endpoints expose a business flow that is sensitive not because of a technical vulnerability but because of what the flow accomplishes: purchasing a limited-stock item, applying a one-time discount, transferring funds, or creating an account. If the API does not consider the business impact of that flow being invoked repeatedly, out of expected sequence, or at high speed by an automated client, it can be abused even though every individual request is technically valid. Common examples include scripted coupon-code stacking, bulk account creation for spam, and buying up limited inventory faster than a human could. Mitigation requires identifying which flows are business-sensitive and applying flow-specific protections such as rate limiting, device fingerprinting, CAPTCHAs, or one-time-use enforcement, rather than only validating request shape."
+  },
+  {
+    "source": "OWASP",
+    "title": "Unsafe Consumption of APIs",
+    "identifier": "API10",
+    "url": "https://owasp.org/API-Security/editions/2023/en/0xaa-unsafe-consumption-of-apis/",
+    "content": "Developers often trust data returned from third-party or upstream internal APIs more than they trust direct user input, applying less validation to it on the assumption that another service already validated it. An attacker who can influence the upstream API's response, or who compromises a less-protected upstream service, can inject malicious data that flows into the consuming application unsanitized. This is particularly dangerous when the consumed data is later used to build a database query, a file path, or a redirect target. Mitigation requires applying the same validation and sanitization rules to data received from other APIs as would be applied to direct user input, and following redirects and TLS certificates from third-party integrations securely."
+  },
+  {
+    "source": "OWASP",
+    "title": "Broken Access Control",
+    "identifier": "A01:2021",
+    "url": "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+    "content": "Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification, or destruction of data, or performing a business function outside the user's limits, for example by modifying a URL, internal application state, or an HTML page, or simply using a custom API attack tool. Common instances include bypassing access control checks by modifying a URL or request parameter, permitting the primary key to be changed to another user's record (an insecure direct object reference), and elevation of privilege by acting as a user without being logged in, or acting as an admin when logged in as a user."
+  },
+  {
+    "source": "OWASP",
+    "title": "Cryptographic Failures",
+    "identifier": "A02:2021",
+    "url": "https://owasp.org/Top10/A02_2021-Cryptographic_Failures/",
+    "content": "Many web applications and APIs do not properly protect sensitive data such as financial information, healthcare records, and personal data. Sensitive data deserves extra protection such as encryption at rest and in transit. Failures in this category include transmitting sensitive data in cleartext, using old or weak cryptographic algorithms, using default or weak encryption keys, not enforcing encryption via directives or headers, and not verifying if the received certificate and the certificate chain are valid and belong to the domain the application is expecting."
+  },
+  {
+    "source": "OWASP",
+    "title": "Injection",
+    "identifier": "A03:2021",
+    "url": "https://owasp.org/Top10/A03_2021-Injection/",
+    "content": "An application is vulnerable to injection when user-supplied data is not validated, filtered, or sanitized, and hostile data is used directly or is concatenated into a command, query, or path. Common injection types include SQL, NoSQL, OS command, Object Relational Mapping, LDAP, and Expression Language injection. Mitigation requires using safe, parameterized APIs that avoid the interpreter entirely or provide a parameterized interface, along with positive server-side input validation."
+  },
+  {
+    "source": "OWASP",
+    "title": "Insecure Design",
+    "identifier": "A04:2021",
+    "url": "https://owasp.org/Top10/A04_2021-Insecure_Design/",
+    "content": "Insecure design is a broad category representing missing or ineffective control design, distinct from an insecure implementation of an otherwise sound design. A secure design can still have implementation defects, but an insecure design cannot be fixed by a perfect implementation because the necessary security controls were never designed to exist in the first place. Mitigation requires threat modeling during the design phase itself, secure design patterns, and reference architectures rather than retrofitting controls after the fact."
+  },
+  {
+    "source": "OWASP",
+    "title": "Security Misconfiguration",
+    "identifier": "A05:2021",
+    "url": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+    "content": "Security misconfiguration covers missing appropriate security hardening across any part of the application stack, or improperly configured permissions on cloud services, unnecessary features enabled or installed, default accounts with unchanged passwords, overly informative error handling that leaks stack traces to users, and out-of-date or missing security patches. This category benefits from an automated, repeatable hardening process and minimizing the platform's footprint by removing unused features and frameworks."
+  },
+  {
+    "source": "OWASP",
+    "title": "Vulnerable and Outdated Components",
+    "identifier": "A06:2021",
+    "url": "https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/",
+    "content": "An application is likely vulnerable if it uses components with known vulnerabilities, is unsupported or out of date, or if the versions of components used are not inventoried and regularly scanned. Because a component typically runs with the same privileges as the application itself, a flaw in any component can result in serious impact. Mitigation requires maintaining an inventory of component versions and their dependencies, continuously monitoring for known vulnerabilities in them, and obtaining components only from official sources over secure links."
+  },
+  {
+    "source": "OWASP",
+    "title": "Identification and Authentication Failures",
+    "identifier": "A07:2021",
+    "url": "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/",
+    "content": "Confirmation of a user's identity, authentication, and session management is critical to protecting against authentication-related attacks. Weaknesses include permitting brute-force or credential-stuffing attacks, permitting weak or well-known default passwords, using weak or ineffective credential recovery processes, and exposing session identifiers in URLs or failing to invalidate them properly upon logout or after a period of inactivity."
+  },
+  {
+    "source": "OWASP",
+    "title": "Software and Data Integrity Failures",
+    "identifier": "A08:2021",
+    "url": "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/",
+    "content": "This category covers assumptions related to software updates, critical data, and CI/CD pipelines being made without verifying integrity. An example is an application relying on plugins, libraries, or modules from untrusted sources or repositories without integrity verification, or an insecure deserialization process that allows a remote attacker to execute arbitrary code. Mitigation requires digital signatures to verify software or data authenticity, and ensuring CI/CD pipelines have proper access control and configuration."
+  },
+  {
+    "source": "OWASP",
+    "title": "Security Logging and Monitoring Failures",
+    "identifier": "A09:2021",
+    "url": "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/",
+    "content": "Insufficient logging, detection, monitoring, and active response occurs any time auditable events such as logins, failed logins, and high-value transactions are not logged, or when logs are only stored locally without a means to escalate alerts in real time. Without adequate logging and monitoring, breaches cannot be detected, and when they are detected it is typically by external parties rather than internal processes, often long after the initial compromise."
+  },
+  {
+    "source": "OWASP",
+    "title": "Server-Side Request Forgery (SSRF)",
+    "identifier": "A10:2021",
+    "url": "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/",
+    "content": "SSRF flaws occur whenever a web application fetches a remote resource without validating the user-supplied URL, allowing an attacker to coerce the application into sending a crafted request to an unexpected destination, even when protected by a firewall, VPN, or another type of network access control list. As modern architectures increasingly fetch remote resources such as webhooks, file imports from URLs, and URL previews, the prevalence of SSRF is increasing; mitigation requires strict allowlisting of destination hosts and disabling redirects when fetching user-supplied URLs."
+  }
+]

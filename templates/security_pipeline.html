@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Security Analysis Pipeline - ThreatLens{% endblock %}
+{% block content %}
+
+{% if not project %}
+  <p style="color:var(--navy-600);">Select or create a project in <a href="/settings" style="color:var(--accent-600);">Settings</a> first.</p>
+{% else %}
+  <div class="page-header">
+    <div>
+      <h1>Security Analysis Pipeline</h1>
+      <div class="subtitle">Real-time status of this project's fixed analysis pipeline - not simulated, read directly from step run history.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Pipeline Status</h2></div>
+    <div style="padding:8px 0;">
+      {% for stage_key, stage_label, status, latest_run in stage_statuses %}
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid var(--border);">
+        <span style="font-size:16px;width:20px;text-align:center;">
+          {% if status == "completed" %}&#10003;{% elif status == "processing" %}&#9679;{% elif status == "failed" %}&#10007;{% else %}&#9675;{% endif %}
+        </span>
+        <span style="font-weight:500;font-size:13px;min-width:220px;{% if status == 'pending' %}color:var(--navy-500);{% endif %}">{{ stage_label }}</span>
+        {% if latest_run %}
+          <span class="pipeline-status-dot pipeline-status-{{ latest_run.status.value }}"></span>
+          <span class="badge status-{{ latest_run.status.value }}">{{ status | upper }}</span>
+          <span style="font-size:11px;color:var(--navy-500);">
+            {% if latest_run.finished_at and latest_run.started_at %}
+              {{ "%.1f" | format((latest_run.finished_at - latest_run.started_at).total_seconds()) }}s
+            {% endif %}
+          </span>
+          <span style="font-size:11px;color:var(--navy-500);">in: {{ latest_run.input_summary }}</span>
+          <span style="font-size:11px;color:var(--navy-500);">out: {{ latest_run.output_summary }}</span>
+          {% if latest_run.error %}<span style="font-size:11px;color:#be123c;">error: {{ latest_run.error }}</span>{% endif %}
+        {% else %}
+          <span class="badge status-PENDING">PENDING</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Pipeline Activity Log</h2>
+      <span style="font-size:11px;color:var(--navy-500);">{{ timeline|length }} events</span>
+    </div>
+    <div style="max-height:480px;overflow-y:auto;">
+      {% for event in timeline %}
+      <div style="display:flex;gap:12px;padding:8px 18px;border-top:1px solid var(--border);font-size:12.5px;">
+        <span class="mono" style="color:var(--navy-500);min-width:150px;">{{ event.timestamp | ist("%H:%M:%S") }}</span>
+        <span class="badge status-{{ event.status.value }}" style="min-width:80px;text-align:center;">{{ event.status.value }}</span>
+        <span>{{ event.description }}</span>
+      </div>
+      {% else %}
+      <p style="padding:18px;color:var(--navy-500);font-size:13px;">No pipeline activity recorded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

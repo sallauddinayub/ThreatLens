@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Knowledge Base - ThreatLens{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>RAG Knowledge Base</h1>
+    <div class="subtitle">
+      {{ total_count }} documents across {{ source_counts|length }} sources
+      {% if not vector_store_available %}&middot; browse-only (vector search disabled - install chromadb + sentence-transformers to enable retrieval-grounded threat mapping){% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:14px;">
+    {% for src, count in source_counts.items() %}
+    <div class="kpi-card" style="min-width:100px;padding:10px 14px;">
+      <div class="kpi-label">{{ src }}</div>
+      <div class="kpi-value" style="font-size:18px;">{{ count }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<form method="get" style="display:flex;gap:8px;margin-bottom:16px;">
+  <select name="source" onchange="this.form.submit()" style="max-width:200px;">
+    <option value="All" {% if source_filter == "All" %}selected{% endif %}>All sources</option>
+    {% for src in source_counts.keys() %}
+    <option value="{{ src }}" {% if source_filter == src %}selected{% endif %}>{{ src }}</option>
+    {% endfor %}
+  </select>
+  <input type="text" name="q" value="{{ search_q }}" placeholder="Search title, identifier, or content..." style="max-width:320px;" />
+  <button class="btn btn-secondary" type="submit">Search</button>
+</form>
+
+<div class="panel" style="overflow-x:auto;">
+  <table class="data-table">
+    <thead><tr>
+      <th>Identifier</th><th>Title</th><th>Source</th><th>Cited in this project</th><th></th>
+    </tr></thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td class="mono" style="white-space:nowrap;">{{ doc.identifier or "-" }}</td>
+        <td>
+          <a href="/knowledge-base/{{ doc.id }}" style="font-weight:500;color:var(--navy-800);">{{ doc.title }}</a>
+          <div style="font-size:11px;color:var(--navy-500);margin-top:2px;max-width:520px;">{{ doc.content[:130] }}{% if doc.content|length > 130 %}&hellip;{% endif %}</div>
+        </td>
+        <td><span class="badge badge-rag">{{ doc.source }}</span></td>
+        <td>
+          {% if doc.identifier and doc.identifier.lower() in cited_identifiers %}
+            <span class="badge status-VALID">Cited</span>
+          {% else %}
+            <span style="color:var(--navy-500);font-size:12px;">-</span>
+          {% endif %}
+        </td>
+        <td><a href="/knowledge-base/{{ doc.id }}" style="font-size:12px;color:var(--accent-600);">View &rarr;</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center;color:var(--navy-500);padding:32px;">No documents match this filter.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% set steps = [
+  ("SYSTEM_ANALYSIS", "System Overview"),
+  ("ASSET_DISCOVERY", "Asset Discovery"),
+  ("THREAT_MODELING", "Threat Modeling"),
+  ("TEST_GENERATION", "Test Generation"),
+  ("RISK_PRIORITIZATION", "Risk Evaluation"),
+] %}
+{% set stage_to_index = {
+  "SYSTEM_ANALYSIS": 0, "ASSET_DISCOVERY": 1, "THREAT_MODELING": 2, "STRIDE_ANALYSIS": 2,
+  "ATTACK_SCENARIO_GENERATION": 2, "TEST_GENERATION": 3, "TEST_VALIDATION": 3, "TEST_EXECUTION": 3,
+  "RISK_PRIORITIZATION": 4, "REPORT_GENERATION": 4, "COMPLETE": 4
+} %}
+{% set active_index = stage_to_index.get(stage, -1) %}
+<div class="stepper">
+  {% for key, label in steps %}
+    {% set is_active = loop.index0 == active_index and stage != "COMPLETE" %}
+    {% set is_done = loop.index0 < active_index or stage == "COMPLETE" %}
+    <div class="step {% if is_active %}active{% elif is_done %}done{% endif %}">
+      <span class="step-num">{% if is_done and not is_active %}&#10003;{% else %}{{ loop.index }}{% endif %}</span>
+      <span>{{ label }}</span>
+    </div>
+  {% endfor %}
+</div>

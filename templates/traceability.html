@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Traceability - ThreatLens{% endblock %}
+{% block content %}
+
+{% if not project %}
+  <p style="color:var(--navy-600);">Select or create a project in <a href="/settings" style="color:var(--accent-600);">Settings</a> first.</p>
+{% else %}
+  <div class="page-header">
+    <div>
+      <h1>Threat-to-Test Traceability</h1>
+      <div class="subtitle">{{ rows|length }} traced chains &middot; every cell links to its detail page &middot; sorted by risk</div>
+    </div>
+  </div>
+
+  <div class="panel" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead><tr>
+        <th>Asset</th><th>Threat</th><th>STRIDE</th><th>Attack Scenario</th><th>Test</th>
+        <th>Latest Execution</th><th>Evidence</th><th>Remediation</th><th>Risk</th>
+      </tr></thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.asset }}</td>
+          <td><a href="/threats/{{ row.threat.id }}" style="font-weight:500;color:var(--navy-800);">{{ row.threat.display_id }}</a></td>
+          <td><span class="badge badge-stride-{{ row.stride_initial }}">{{ row.stride_initial }}</span></td>
+          <td style="max-width:220px;font-size:12px;color:var(--navy-600);">{{ row.scenario.objective }}</td>
+          <td class="mono">{{ row.test.display_id }}</td>
+          <td>
+            {% if row.latest_execution %}
+              <a href="/executions/{{ row.latest_execution.id }}/evidence" class="badge status-{{ row.latest_execution.status.value.replace(' ', '_') }}">{{ row.latest_execution.status.value }}</a>
+            {% else %}
+              <span class="badge status-PENDING">NOT EXECUTED</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.latest_execution %}
+              <a href="/executions/{{ row.latest_execution.id }}/evidence" style="font-size:12px;color:var(--accent-600);">{{ row.evidence_count }} item(s)</a>
+            {% else %}
+              <span style="font-size:12px;color:var(--navy-500);">-</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if row.latest_remediation %}
+              <span class="badge {% if row.latest_remediation.status.value == 'Fixed' %}status-VALID{% elif row.latest_remediation.status.value == 'Retest Required' %}status-INVALID{% elif row.latest_remediation.status.value == 'False Positive' %}status-PENDING{% else %}status-NEEDS_REVIEW{% endif %}">{{ row.latest_remediation.status.value }}</span>
+            {% else %}
+              <span style="font-size:12px;color:var(--navy-500);">-</span>
+            {% endif %}
+          </td>
+          <td><span class="badge badge-risk risk-{{ row.risk_level }}">{{ row.risk_level }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" style="text-align:center;color:var(--navy-500);padding:32px;">No security tests generated yet - run the pipeline from Settings.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock %}

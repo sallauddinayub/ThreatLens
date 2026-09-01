@@ -1,0 +1,394 @@
+[
+  {
+    "source": "CWE",
+    "title": "Improper Access Control",
+    "identifier": "CWE-284",
+    "url": "https://cwe.mitre.org/data/definitions/284.html",
+    "content": "The system does not adequately restrict access to a resource from an unauthorized actor. This weakness is a broad parent category covering situations where an authorization check is missing, incomplete, or bypassable, allowing users to perform actions or view data outside their intended privilege level."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Authorization",
+    "identifier": "CWE-285",
+    "url": "https://cwe.mitre.org/data/definitions/285.html",
+    "content": "The system performs an authorization check when a principal attempts to access a resource, but the check is incorrect, allowing access that should have been denied. This commonly results from checking the wrong attribute, trusting client-supplied role claims, or applying the check to the wrong object."
+  },
+  {
+    "source": "CWE",
+    "title": "Exposure of Sensitive Information to an Unauthorized Actor",
+    "identifier": "CWE-200",
+    "url": "https://cwe.mitre.org/data/definitions/200.html",
+    "content": "The system exposes sensitive information to an actor not explicitly authorized to have access, for example through verbose error messages, debug endpoints, or responses that differ depending on whether a resource exists, allowing enumeration."
+  },
+  {
+    "source": "CWE",
+    "title": "Insufficient Session Expiration",
+    "identifier": "CWE-613",
+    "url": "https://cwe.mitre.org/data/definitions/613.html",
+    "content": "A session remains valid for an excessive period after the user has finished using it or after a logout event, giving an attacker who obtains the session token a wider window to reuse it."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Restriction of Excessive Authentication Attempts",
+    "identifier": "CWE-307",
+    "url": "https://cwe.mitre.org/data/definitions/307.html",
+    "content": "The system does not implement sufficient controls, such as lockouts or rate limits, to prevent an attacker from making repeated authentication attempts, enabling credential-stuffing or brute-force attacks."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Neutralization of Special Elements used in an SQL Command",
+    "identifier": "CWE-89",
+    "url": "https://cwe.mitre.org/data/definitions/89.html",
+    "content": "The software constructs a SQL query using externally influenced input without neutralizing special elements, allowing an attacker to alter the intended query structure and read, modify, or delete data outside the application's intended scope."
+  },
+  {
+    "source": "CWE",
+    "title": "Server-Side Request Forgery",
+    "identifier": "CWE-918",
+    "url": "https://cwe.mitre.org/data/definitions/918.html",
+    "content": "The web server receives a URL or similar request from an upstream component and retrieves the contents of this URL without sufficiently ensuring that the destination is intended, which can allow requests to reach unintended internal or external destinations."
+  },
+  {
+    "source": "CWE",
+    "title": "Uncontrolled Resource Consumption",
+    "identifier": "CWE-400",
+    "url": "https://cwe.mitre.org/data/definitions/400.html",
+    "content": "The system does not properly restrict the amount of resources (CPU, memory, storage, bandwidth) that can be consumed by a request, allowing an attacker to exhaust available resources and degrade availability for other users."
+  },
+  {
+    "source": "CWE",
+    "title": "Missing Authorization",
+    "identifier": "CWE-862",
+    "url": "https://cwe.mitre.org/data/definitions/862.html",
+    "content": "A product does not perform an authorization check when a user attempts to access a resource or perform an action. This differs from CWE-284 (Improper Access Control) in that here no check is performed at all, rather than one that is present but flawed. Missing authorization is common in APIs where a route requires authentication (proving who the caller is) but never verifies that the caller is permitted to act on the specific resource requested. Mitigation requires an explicit, server-side authorization check on every state-changing or data-returning endpoint, performed after authentication and before any business logic executes, denying access by default unless a policy explicitly grants it."
+  },
+  {
+    "source": "CWE",
+    "title": "Improperly Controlled Modification of Dynamically-Determined Object Attributes",
+    "identifier": "CWE-915",
+    "url": "https://cwe.mitre.org/data/definitions/915.html",
+    "content": "Also known as Mass Assignment, this weakness occurs when software allows a user-supplied request body to automatically populate an object's internal fields or properties without restricting which fields are writable. An attacker can add extra properties to a request, such as a 'role' or 'is_admin' field, and have the application blindly bind that value onto a database record it should never have been able to set. Mitigation requires an explicit allowlist of client-writable fields per endpoint, rejecting or ignoring any unexpected property rather than binding it automatically."
+  },
+  {
+    "source": "CWE",
+    "title": "Generation of Error Message Containing Sensitive Information",
+    "identifier": "CWE-209",
+    "url": "https://cwe.mitre.org/data/definitions/209.html",
+    "content": "An application generates an error message that includes sensitive information about its internal state, such as a stack trace, a database query, an internal file path, or configuration detail, and returns it to the requesting client. Even when the underlying vulnerability the error reveals is otherwise minor, the disclosure itself helps an attacker map the application's internals, technology stack, and failure modes, accelerating further attacks. Mitigation requires returning generic, user-safe error messages to clients while logging full diagnostic detail only on the server side."
+  },
+  {
+    "source": "CWE",
+    "title": "Insufficient Logging",
+    "identifier": "CWE-778",
+    "url": "https://cwe.mitre.org/data/definitions/778.html",
+    "content": "When a security-relevant event occurs, such as a failed authentication attempt, an authorization failure, or a state-changing transaction, the application does not log it, or logs it without enough detail (actor, timestamp, target resource) to reconstruct what happened afterward. This weakness does not cause a breach by itself, but it means that when one occurs, there is no reliable audit trail to detect it, scope its impact, or prove what did or did not happen \u2014 a significant problem for financial transactions and access-control decisions specifically. Mitigation requires structured, tamper-evident logging of every authentication and authorization decision, and every state-changing operation, with enough context to support later investigation."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Neutralization of Special Elements in Data Query Logic",
+    "identifier": "CWE-943",
+    "url": "https://cwe.mitre.org/data/definitions/943.html",
+    "content": "This is the NoSQL analogue of classic SQL injection: an application constructs a database query using attacker-controlled input without properly neutralizing operators or structural elements meaningful to the query language (for example, MongoDB's '$where' or '$ne' operators). Because many NoSQL query APIs accept structured objects rather than plain strings, developers sometimes assume they are immune to injection, but a client-supplied JSON object can still alter query logic entirely, for example turning an equality match into an always-true condition. Mitigation requires strict schema validation of query input and avoiding the direct use of client-supplied objects as query operators."
+  },
+  {
+    "source": "CWE",
+    "title": "Least Privilege Violation",
+    "identifier": "CWE-272",
+    "url": "https://cwe.mitre.org/data/definitions/272.html",
+    "content": "A component, service account, or database credential is granted broader access than it actually needs to perform its function \u2014 for example, an API's database user having write access to every table when it only ever needs to read from two of them. This weakness does not require a distinct bug to be exploited: any other vulnerability that provides even limited code execution or query injection becomes far more damaging when the underlying credential already has excessive reach. Mitigation requires provisioning the minimum access each component needs, scoped per service rather than sharing one broad credential across an application."
+  },
+  {
+    "source": "CWE",
+    "title": "Business Logic Errors",
+    "identifier": "CWE-840",
+    "url": "https://cwe.mitre.org/data/definitions/840.html",
+    "content": "The application's workflow or business rules can be manipulated in ways the designer did not intend, even though every individual technical control (authentication, input validation, authorization) is functioning correctly. Common examples include a client being able to submit a negative quantity or a modified price for an order, replaying a one-time discount code, or completing steps in a workflow out of their intended order (for example, applying a coupon after checkout has already been finalized). Because these flaws are semantic rather than syntactic, conventional input-validation testing often misses them; they require dedicated workflow-level and state-transition testing informed by the application's actual business rules."
+  },
+  {
+    "source": "CWE",
+    "title": "Session Fixation",
+    "identifier": "CWE-384",
+    "url": "https://cwe.mitre.org/data/definitions/384.html",
+    "content": "An application allows a session identifier to be set or predicted before a user authenticates, and then continues to use that same identifier after login without regenerating it. An attacker who can supply or predict a session ID (for example, via a URL parameter) can trick a victim into authenticating under that known session, then use the same identifier themselves to hijack the now-authenticated session. Mitigation requires issuing a brand new session identifier immediately upon successful authentication and invalidating the pre-authentication session entirely."
+  },
+  {
+    "source": "CWE",
+    "title": "Incorrect Permission Assignment for Critical Resource",
+    "identifier": "CWE-732",
+    "url": "https://cwe.mitre.org/data/definitions/732.html",
+    "content": "A file, directory, cloud storage bucket, or other resource holding sensitive data is assigned permissions that allow broader access than intended, such as a storage bucket left publicly listable and readable, or a configuration file left world-readable on a shared host. This is one of the most common causes of large-scale data exposure incidents, since the resource itself is never directly attacked; it is simply left open. Mitigation requires explicit, minimum-necessary permission grants on every resource holding sensitive data, verified with automated configuration scanning rather than relying on default settings being safe."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Neutralization of Input During Web Page Generation (Cross-site Scripting)",
+    "identifier": "CWE-79",
+    "url": "https://cwe.mitre.org/data/definitions/79.html",
+    "content": "The software does not neutralize or incorrectly neutralizes user-controllable input before it is placed in output that is used as a web page served to other users. An attacker can inject client-side script that executes in a victim's browser in the security context of the vulnerable site, allowing session hijacking, credential theft, or defacement. Mitigation requires context-aware output encoding at the point data is rendered, combined with a strict Content-Security-Policy as a defense-in-depth layer."
+  },
+  {
+    "source": "CWE",
+    "title": "Cross-Site Request Forgery (CSRF)",
+    "identifier": "CWE-352",
+    "url": "https://cwe.mitre.org/data/definitions/352.html",
+    "content": "The web application does not, or cannot, sufficiently verify whether a well-formed, valid, consistent request was intentionally provided by the user who submitted it. Because browsers automatically attach cookies to requests, an attacker can trick an authenticated victim's browser into submitting a forged state-changing request to a vulnerable site without the victim's knowledge. Mitigation requires a unique, unpredictable token embedded in every state-changing form or request, verified server-side before the action is performed."
+  },
+  {
+    "source": "CWE",
+    "title": "Unrestricted Upload of File with Dangerous Type",
+    "identifier": "CWE-434",
+    "url": "https://cwe.mitre.org/data/definitions/434.html",
+    "content": "The software allows an attacker to upload or transfer files of a dangerous type that can be automatically processed within the product's environment, such as an executable script placed inside a web-accessible directory. Mitigation requires validating uploaded content by type (not merely by file extension), storing uploads outside the web root or in a location that cannot be directly executed, and renaming files on upload to prevent path or extension-based tricks."
+  },
+  {
+    "source": "CWE",
+    "title": "Insufficiently Protected Credentials",
+    "identifier": "CWE-522",
+    "url": "https://cwe.mitre.org/data/definitions/522.html",
+    "content": "The software transmits or stores authentication credentials using an insecure method that is susceptible to unauthorized interception or retrieval, such as storing a password in recoverable, reversible form, or transmitting it over an unencrypted channel. This differs from simply using a weak hash; it covers any handling of credentials that fails to adequately protect them throughout their lifecycle from entry to storage to transmission."
+  },
+  {
+    "source": "CWE",
+    "title": "Use of Hard-coded Credentials",
+    "identifier": "CWE-798",
+    "url": "https://cwe.mitre.org/data/definitions/798.html",
+    "content": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data. Because the credential is embedded directly in source code or a configuration file shipped with the software, anyone with access to the codebase or a compiled binary can extract and reuse it, and the credential cannot be rotated without a code change."
+  },
+  {
+    "source": "CWE",
+    "title": "Use of Insufficiently Random Values",
+    "identifier": "CWE-330",
+    "url": "https://cwe.mitre.org/data/definitions/330.html",
+    "content": "The software uses insufficiently random numbers or values in a security context that requires unpredictability, such as generating a session token, a password-reset link, or a cryptographic key using a general-purpose pseudo-random number generator rather than one designed for cryptographic use. An attacker who can predict or narrow down the possible values can forge tokens or guess secrets far faster than brute force would otherwise allow."
+  },
+  {
+    "source": "CWE",
+    "title": "URL Redirection to Untrusted Site (Open Redirect)",
+    "identifier": "CWE-601",
+    "url": "https://cwe.mitre.org/data/definitions/601.html",
+    "content": "A web application accepts a user-controlled input that specifies a link to an external site, and uses that link in a redirect without validating that the destination is trusted or expected. Attackers use this to craft links that appear to originate from a trusted domain but actually redirect victims to a phishing or malware site, exploiting the user's trust in the original domain shown at the start of the URL."
+  },
+  {
+    "source": "CWE",
+    "title": "XML External Entity Reference (XXE)",
+    "identifier": "CWE-611",
+    "url": "https://cwe.mitre.org/data/definitions/611.html",
+    "content": "The software processes an XML document that can contain XML entities referencing external resources, and the XML parser is configured to resolve these entities. An attacker can craft a malicious XML document to read arbitrary local files, perform server-side request forgery, or in some configurations achieve denial of service via entity expansion. Mitigation requires disabling external entity resolution and DTD processing in the XML parser configuration by default."
+  },
+  {
+    "source": "CWE",
+    "title": "Deserialization of Untrusted Data",
+    "identifier": "CWE-502",
+    "url": "https://cwe.mitre.org/data/definitions/502.html",
+    "content": "The application deserializes untrusted data without sufficiently verifying that the resulting data is valid, allowing an attacker to craft a serialized object whose deserialization triggers unintended behavior, up to and including arbitrary code execution, depending on the classes available on the deserializing system. This is especially dangerous in languages and frameworks where deserialization can implicitly invoke constructors or magic methods on attacker-controlled class instances."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Neutralization of Special Elements used in an OS Command (Command Injection)",
+    "identifier": "CWE-78",
+    "url": "https://cwe.mitre.org/data/definitions/78.html",
+    "content": "The software constructs an operating system command using user-supplied input without properly neutralizing elements that could modify the intended command, allowing an attacker to execute unintended, arbitrary commands on the host operating system. This typically occurs when application code shells out to the underlying OS to perform a task rather than using a native language API, and concatenates untrusted input directly into the command string."
+  },
+  {
+    "source": "CWE",
+    "title": "Path Traversal",
+    "identifier": "CWE-22",
+    "url": "https://cwe.mitre.org/data/definitions/22.html",
+    "content": "The software uses external input to construct a pathname intended to identify a file or directory beneath a restricted parent directory, but does not properly neutralize sequences such as '../' that can cause the resulting path to resolve to a location outside the restricted directory. This allows reading, writing, or executing files outside the intended sandbox, and is commonly seen in file-download, file-upload, and template-inclusion features."
+  },
+  {
+    "source": "CWE",
+    "title": "Origin Validation Error",
+    "identifier": "CWE-346",
+    "url": "https://cwe.mitre.org/data/definitions/346.html",
+    "content": "The software does not properly verify that the source of data or communication is valid, commonly manifesting as an overly permissive Cross-Origin Resource Sharing (CORS) configuration, such as reflecting any requesting origin back in the Access-Control-Allow-Origin header combined with allowing credentials. This lets a malicious website hosted on an entirely different origin make authenticated requests to the vulnerable application on behalf of a visiting victim and read the response."
+  },
+  {
+    "source": "CWE",
+    "title": "Authorization Bypass Through User-Controlled Key",
+    "identifier": "CWE-639",
+    "url": "https://cwe.mitre.org/data/definitions/639.html",
+    "content": "The system's authorization functionality relies on a key or identifier supplied by the user, such as a record ID in a URL or request body, without additionally verifying that the requesting user is actually entitled to access the object referenced by that key. This is the underlying mechanism behind most Insecure Direct Object Reference and Broken Object Level Authorization findings: authentication succeeds, but the authorization check is missing or trusts client-supplied context."
+  },
+  {
+    "source": "CWE",
+    "title": "Missing Authentication for Critical Function",
+    "identifier": "CWE-306",
+    "url": "https://cwe.mitre.org/data/definitions/306.html",
+    "content": "The software does not perform any authentication check for a function that requires a provable user identity or consumes significant resources, such as an administrative action, a password-reset endpoint, or a data-export feature. Unlike missing authorization (which assumes identity is known but permission is not checked), this weakness means the caller's identity itself is never established before the sensitive function executes."
+  },
+  {
+    "source": "CWE",
+    "title": "Weak Password Requirements",
+    "identifier": "CWE-521",
+    "url": "https://cwe.mitre.org/data/definitions/521.html",
+    "content": "The product does not require, or does not sufficiently enforce, a strong password policy for user accounts, permitting passwords that are too short, from a list of commonly-used or previously-breached passwords, or lacking sufficient complexity. Weak passwords are far more susceptible to brute-force and credential-stuffing attacks, and are the entry point for a large proportion of real-world account takeover incidents."
+  },
+  {
+    "source": "CWE",
+    "title": "Missing Encryption of Sensitive Data",
+    "identifier": "CWE-311",
+    "url": "https://cwe.mitre.org/data/definitions/311.html",
+    "content": "The software does not encrypt sensitive or critical information before storage or transmission, exposing it to interception in transit or exposure at rest if the storage medium or backup is later accessed by an unauthorized party. Even when access controls are properly enforced during normal operation, the lack of encryption removes a critical layer of defense against database compromise, backup theft, or network interception."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Certificate Validation",
+    "identifier": "CWE-295",
+    "url": "https://cwe.mitre.org/data/definitions/295.html",
+    "content": "The software does not validate, or incorrectly validates, a certificate, such as failing to check that the certificate is signed by a trusted certificate authority, has not expired, matches the expected hostname, or has not been revoked. Disabling certificate validation is a common but dangerous shortcut during development that sometimes ships to production, entirely defeating the protection TLS is meant to provide against man-in-the-middle interception."
+  },
+  {
+    "source": "CWE",
+    "title": "Allocation of Resources Without Limits or Throttling",
+    "identifier": "CWE-770",
+    "url": "https://cwe.mitre.org/data/definitions/770.html",
+    "content": "The software allocates a resource, such as memory, file handles, database connections, or worker threads, based on an untrusted request without imposing any limit on the quantity or size allocated, allowing an attacker to exhaust the resource and degrade or deny service to legitimate users. This is the general form of denial-of-service weaknesses that specific findings like unrestricted resource consumption or uncontrolled resource consumption fall under."
+  },
+  {
+    "source": "CWE",
+    "title": "Protection Mechanism Failure",
+    "identifier": "CWE-693",
+    "url": "https://cwe.mitre.org/data/definitions/693.html",
+    "content": "A protection mechanism, such as an authentication check, an input filter, or an access-control rule, is present in the design, but its implementation has a flaw that renders it ineffective, or it can be bypassed entirely under certain conditions. This differs from a missing control (where nothing was implemented at all); here a control exists, gives a false sense of security, and fails when relied upon."
+  },
+  {
+    "source": "CWE",
+    "title": "Reliance on Cookies without Validation and Integrity Checking",
+    "identifier": "CWE-565",
+    "url": "https://cwe.mitre.org/data/definitions/565.html",
+    "content": "The application relies on the contents of a cookie for a security-relevant decision, such as identifying a user's role or authentication status, without additional server-side validation or a signature verifying the cookie has not been tampered with. A client can trivially edit its own cookies, so any security-relevant value stored there must be cryptographically signed or validated against server-side state rather than trusted at face value."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Privilege Management",
+    "identifier": "CWE-269",
+    "url": "https://cwe.mitre.org/data/definitions/269.html",
+    "content": "The software does not properly assign, modify, track, or check privileges for an actor, creating an unintended sphere of control, such as a user being able to escalate their own role, or a process retaining elevated privileges longer than it needs them. This covers the broader lifecycle of privilege handling, distinct from a single missing authorization check on one endpoint."
+  },
+  {
+    "source": "CWE",
+    "title": "Exposure of Private Personal Information to an Unauthorized Actor",
+    "identifier": "CWE-359",
+    "url": "https://cwe.mitre.org/data/definitions/359.html",
+    "content": "The software collects, processes, or stores private personal information about an individual and makes it accessible to actors who are not authorized to view it, or does not provide the individual with adequate notice or control over how that data is used. This weakness is central to privacy-focused regulatory obligations and often co-occurs with excessive data exposure in API responses that return more fields than the calling client actually needs."
+  },
+  {
+    "source": "CWE",
+    "title": "UI Misrepresentation of Critical Information (Clickjacking)",
+    "identifier": "CWE-451",
+    "url": "https://cwe.mitre.org/data/definitions/451.html",
+    "content": "The user interface does not properly represent critical information to the user, most commonly by allowing a page to be rendered inside an invisible or disguised frame on an attacker-controlled site, tricking the user into clicking a button or link they did not intend to interact with. Mitigation requires sending a framing-control response header instructing browsers not to render the page inside a frame on a different origin."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Restriction of Excessive Iterations (Rate Limiting Failure)",
+    "identifier": "CWE-1088",
+    "url": "https://cwe.mitre.org/data/definitions/1088.html",
+    "content": "The software allows a legitimately-formed request to be repeated an excessive number of times without adequate detection or throttling, enabling automated abuse such as credential stuffing, inventory scraping, or brute-force enumeration, even though no single request is individually malformed. Mitigation requires rate limiting or progressive delays scoped to the account, IP address, or API key making the requests."
+  },
+  {
+    "source": "CWE",
+    "title": "HTTP Response Splitting",
+    "identifier": "CWE-113",
+    "url": "https://cwe.mitre.org/data/definitions/113.html",
+    "content": "The software receives data from an upstream component but does not neutralize CR and LF characters before including that data in an outgoing HTTP header, allowing an attacker to inject additional headers or an entirely separate HTTP response. This can be used to poison a cache, hijack a page, or conduct cross-site scripting through a header rather than the page body itself. Mitigation requires stripping or rejecting control characters from any user-influenced value placed into a response header."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Verification of Cryptographic Signature",
+    "identifier": "CWE-347",
+    "url": "https://cwe.mitre.org/data/definitions/347.html",
+    "content": "The software does not verify, or incorrectly verifies, the cryptographic signature for data, most commonly seen in token-based authentication schemes where a JSON Web Token's signature is not checked, or the verification code trusts an attacker-controlled 'algorithm' field in the token header (allowing an attacker to switch to the 'none' algorithm or a different key type). This weakness effectively converts a signed token into an unsigned one from the attacker's perspective."
+  },
+  {
+    "source": "CWE",
+    "title": "Use of Cryptographically Weak Pseudo-Random Number Generator",
+    "identifier": "CWE-338",
+    "url": "https://cwe.mitre.org/data/definitions/338.html",
+    "content": "The product uses a pseudo-random number generator that is not cryptographically strong for a security-sensitive purpose such as generating a token, nonce, or key, even when the underlying algorithm may be adequate for non-security uses like simulations or games. An attacker who understands the generator's internal state or seeding can often predict future or past outputs, undermining anything that depended on their unpredictability."
+  },
+  {
+    "source": "CWE",
+    "title": "Inadequate Encryption Strength",
+    "identifier": "CWE-326",
+    "url": "https://cwe.mitre.org/data/definitions/326.html",
+    "content": "The software stores or transmits sensitive data using an encryption scheme that is theoretically sound but insufficient for the level of protection required, such as using a key length too short to resist modern brute-force capability, or a cipher mode known to be weak in certain configurations. Encryption strength should be periodically reassessed against current cryptographic guidance rather than assumed permanently adequate once chosen."
+  },
+  {
+    "source": "CWE",
+    "title": "Use of Password Hash With Insufficient Computational Effort",
+    "identifier": "CWE-916",
+    "url": "https://cwe.mitre.org/data/definitions/916.html",
+    "content": "The software generates a hash for a password but uses a scheme that does not provide sufficient computational effort, such as a single round of a fast general-purpose hash function like MD5 or SHA-1, rather than a purpose-built, deliberately slow password-hashing algorithm such as bcrypt, scrypt, or PBKDF2. If a password database is ever exposed, a fast hash allows an attacker to test billions of guesses per second, whereas a properly slow algorithm limits this to a small fraction of that rate."
+  },
+  {
+    "source": "CWE",
+    "title": "Exposure of Resource to Wrong Sphere",
+    "identifier": "CWE-668",
+    "url": "https://cwe.mitre.org/data/definitions/668.html",
+    "content": "The product exposes a resource, such as a file, memory location, or network connection, to a control sphere (a user, process, or trust boundary) that is not supposed to have access to it. This is a general parent weakness underlying more specific findings such as insecure permission assignment or missing access checks, unified by the theme of a resource crossing a trust boundary it should not have crossed."
+  },
+  {
+    "source": "CWE",
+    "title": "Incorrect Authorization",
+    "identifier": "CWE-863",
+    "url": "https://cwe.mitre.org/data/definitions/863.html",
+    "content": "The software performs an authorization check when an actor attempts to access a resource or perform an action, but the check is incorrect, granting access it should not, or the check is based on the wrong criteria, such as validating the wrong object identifier or a stale cached permission. This differs from a missing check (CWE-862) in that a check genuinely exists and executes, but its logic does not correctly enforce the intended policy."
+  },
+  {
+    "source": "CWE",
+    "title": "Authentication Bypass by Spoofing",
+    "identifier": "CWE-290",
+    "url": "https://cwe.mitre.org/data/definitions/290.html",
+    "content": "An application relies on a claimed identity, such as a value in a header, cookie, or network attribute, to make an authentication decision without adequately verifying that the claim is genuine. An attacker can forge or spoof the trusted-looking value, for example an internal-network header that a reverse proxy is supposed to set but which the application accepts directly from any client, to bypass authentication entirely."
+  },
+  {
+    "source": "CWE",
+    "title": "Authentication Bypass by Capture-replay",
+    "identifier": "CWE-294",
+    "url": "https://cwe.mitre.org/data/definitions/294.html",
+    "content": "A capture-replay flaw exists when the design of the software allows an attacker to intercept a valid authentication credential or session token and reuse it later, exactly as originally sent, to authenticate as the original party. This is commonly mitigated with time-limited tokens, nonces that can only be used once, or binding a token to additional context (such as the original client's characteristics) that a replayed token would not match."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Enforcement of Behavioral Workflow",
+    "identifier": "CWE-841",
+    "url": "https://cwe.mitre.org/data/definitions/841.html",
+    "content": "The software supports a security-relevant workflow that consists of several required steps that must be performed in a specific sequence, but it does not properly enforce that sequence, allowing an actor to skip a required step or perform steps out of order. A common example is an API allowing a 'confirm payment' call to succeed even though the corresponding 'create order' step was never actually completed for that identifier."
+  },
+  {
+    "source": "CWE",
+    "title": "Exposure of Information Through Directory Listing",
+    "identifier": "CWE-548",
+    "url": "https://cwe.mitre.org/data/definitions/548.html",
+    "content": "A directory listing is inappropriately exposed, yielding potentially sensitive information about file names, structure, and existence to an actor who would not otherwise have that visibility. While the individual files may or may not be independently protected, the listing itself accelerates reconnaissance by revealing what exists to target next, including backup files, configuration files, or old versions accidentally left in a web-accessible directory."
+  },
+  {
+    "source": "CWE",
+    "title": "Insertion of Sensitive Information into Externally-Accessible File or Directory",
+    "identifier": "CWE-538",
+    "url": "https://cwe.mitre.org/data/definitions/538.html",
+    "content": "Sensitive information, such as credentials, internal hostnames, or debug data, is placed in a file or directory that is accessible to actors outside of the intended trust boundary, for example a build artifact, a source map, or a backup file left inside a publicly-served web directory. Unlike a code-level vulnerability, this is fundamentally a deployment and configuration hygiene issue."
+  },
+  {
+    "source": "CWE",
+    "title": "Inclusion of Functionality from Untrusted Control Sphere",
+    "identifier": "CWE-829",
+    "url": "https://cwe.mitre.org/data/definitions/829.html",
+    "content": "The software imports, includes, or otherwise relies on functionality from an untrusted source, such as loading a script from a third-party content delivery network without integrity verification, or dynamically including a file whose location is partly influenced by user input. If the untrusted source is compromised or was malicious to begin with, its code executes with the same trust and privilege as the including application."
+  },
+  {
+    "source": "CWE",
+    "title": "Unintended Proxy or Intermediary (Confused Deputy)",
+    "identifier": "CWE-441",
+    "url": "https://cwe.mitre.org/data/definitions/441.html",
+    "content": "The software receives a request, message, or connection from one actor and unintentionally forwards it, or a similar one, to another party in a way the second party interprets as coming from a more trusted source, effectively turning the vulnerable software into an unwitting proxy. Server-Side Request Forgery is a specific, common instance of this general weakness, where the application's own network position is abused to reach a destination the original requester could not have reached directly."
+  },
+  {
+    "source": "CWE",
+    "title": "Improper Verification of Source of a Communication Channel",
+    "identifier": "CWE-940",
+    "url": "https://cwe.mitre.org/data/definitions/940.html",
+    "content": "The software establishes a communication channel to handle an incoming request, but does not properly verify that the request actually originated from the expected origin, such as accepting a webhook callback without validating a shared-secret signature, allowing anyone who discovers the endpoint URL to send forged events indistinguishable from legitimate ones."
+  }
+]

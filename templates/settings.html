@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Settings - ThreatLens{% endblock %}
+{% block content %}
+
+<p class="subtitle" style="font-size:14px;">Create a project, grant it explicit authorization to run active tests, and feed it a system description.</p>
+
+<div style="max-width:640px;margin-top:20px;">
+
+  <!-- Step 1: create project -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>1. Project</h2>
+      {% if project %}<span style="font-size:12px;color:#047857;font-weight:500;">Active: {{ project.name }}</span>{% endif %}
+    </div>
+    <div class="panel-body">
+      <form method="post" action="/settings/create-project">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="field">
+          <label class="field-label">Project name</label>
+          <input type="text" name="name" value="Demo Shop Assessment" />
+        </div>
+        <button class="btn btn-primary" type="submit">Create project</button>
+      </form>
+      {% if project %}<p class="mono" style="font-size:11px;color:var(--navy-500);margin-top:10px;">project_id: {{ project.id }}</p>{% endif %}
+    </div>
+  </div>
+
+  <!-- Step 2: authorization -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>2. Authorize active testing</h2>
+      {% if project and project.authorized_for_active_testing %}<span style="font-size:12px;color:#047857;font-weight:500;">Authorized</span>{% endif %}
+    </div>
+    <div class="panel-body">
+      <p style="font-size:12px;color:var(--navy-600);margin-bottom:12px;">
+        No security test will execute against any target until this is submitted. Only localhost or
+        explicitly allowlisted authorized hosts will ever be reachable by the execution engine. List your own
+        application's host here (e.g. <code>localhost</code> if it runs locally, or a staging hostname) - the
+        demo-lab practice target is entirely optional and separate.
+      </p>
+      <form method="post" action="/settings/authorize">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="field">
+          <label class="field-label">Allowlisted targets (comma-separated)</label>
+          <input type="text" name="allowlist" value="localhost" />
+        </div>
+        <div class="field">
+          <label class="field-label">Type the confirmation statement exactly</label>
+          <input type="text" name="confirmation" placeholder="I confirm that I am authorized to test this application." class="mono" style="font-size:12px;" />
+        </div>
+        <button class="btn btn-primary" type="submit" {% if not project %}disabled{% endif %}>Submit authorization</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 3: run pipeline - all input methods shown together, pick whichever matches what you have -->
+  <div class="panel">
+    <div class="panel-header"><h2>3. Run the security analysis pipeline</h2></div>
+    <div class="panel-body">
+
+      <!-- Manual -->
+      <div style="padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--border);">
+        <div class="field-label" style="margin-bottom:8px;">Manual (quick test - no file needed)</div>
+        <p style="font-size:12px;color:var(--navy-600);margin-bottom:10px;">Runs the pipeline using a built-in sample system model (API, Database, Auth Service).</p>
+        <form method="post" action="/settings/run-pipeline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="input_type" value="manual" />
+          <button class="btn btn-primary" type="submit" {% if not project %}disabled{% endif %}>Run full pipeline</button>
+        </form>
+      </div>
+
+      <!-- OpenAPI - recommended input -->
+      <div style="padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="field-label" style="margin-bottom:0;">OpenAPI / Swagger spec</span>
+          <span class="badge" style="background:var(--accent-50);color:var(--accent-600);border-color:transparent;">&#11088; Recommended</span>
+        </div>
+        <p style="font-size:12px;color:var(--navy-600);margin-bottom:10px;">
+          Automatically discovers APIs, endpoints, methods, parameters, authentication, and schemas.
+        </p>
+        <form method="post" action="/settings/validate-openapi" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <div class="dropzone" tabindex="0" role="button" aria-label="Upload OpenAPI spec file">
+            <input type="file" name="file" class="dropzone-input" accept=".yaml,.yml,.json" id="openapi-input" />
+            <div class="dropzone-empty">
+              <div class="dropzone-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 18a4.5 4.5 0 01-.7-8.94A5.5 5.5 0 0117.4 8a4 4 0 01.9 7.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v6.5M9.2 15.3L12 12.5l2.8 2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="dropzone-title">Drag &amp; drop your file here</div>
+              <div class="dropzone-desc">or <span class="dropzone-browse">browse files</span></div>
+              <div class="dropzone-hint">.json, .yaml, .yml &middot; Max 10MB</div>
+            </div>
+            <div class="dropzone-file">
+              <div class="dropzone-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 2h8l6 6v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+              <div class="dropzone-file-info">
+                <div class="dropzone-file-name"></div>
+                <div class="dropzone-file-meta"></div>
+                <div class="dropzone-file-check">&#10003; File selected - ready to validate</div>
+              </div>
+              <button type="button" class="dropzone-remove">Remove</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" style="margin-top:12px;" {% if not project %}disabled{% endif %}>Validate file</button>
+        </form>
+        <details style="margin-top:10px;" {% if tab == "openapi" and openapi_validation %}open{% endif %}>
+          <summary style="font-size:12px;color:var(--accent-600);cursor:pointer;">Or paste the contents directly</summary>
+          <form method="post" action="/settings/validate-openapi" style="margin-top:8px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="field">
+              <textarea name="raw_text" rows="8" placeholder="openapi: 3.0.0...">{{ openapi_raw_text or "" }}</textarea>
+            </div>
+            <button class="btn btn-secondary" type="submit" {% if not project %}disabled{% endif %}>Validate pasted text</button>
+          </form>
+        </details>
+
+        {% if tab == "openapi" and openapi_validation %}
+          {% if openapi_validation.valid %}
+          <div style="margin-top:14px;border:1px solid #bbf7d0;border-radius:10px;padding:16px;background:#f0fdf4;">
+            <div style="font-size:13px;font-weight:600;color:#15803d;margin-bottom:10px;">&#10003; OpenAPI specification validated</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12.5px;margin-bottom:14px;">
+              <div><span style="color:var(--navy-500);">OpenAPI Version</span><br /><strong>{{ openapi_validation.version }}</strong></div>
+              <div><span style="color:var(--navy-500);">Endpoints</span><br /><strong>{{ openapi_validation.endpoint_count }}</strong></div>
+              <div><span style="color:var(--navy-500);">Paths</span><br /><strong>{{ openapi_validation.path_count }}</strong></div>
+              <div><span style="color:var(--navy-500);">Schemas</span><br /><strong>{{ openapi_validation.schema_count }}</strong></div>
+              <div><span style="color:var(--navy-500);">Authentication</span><br /><strong>{{ openapi_validation.auth_label }}</strong></div>
+              <div><span style="color:var(--navy-500);">File Size</span><br /><strong>{{ openapi_validation.size_label }}</strong></div>
+            </div>
+            <form method="post" action="/settings/run-pipeline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="input_type" value="openapi" />
+              <input type="hidden" name="raw_text" value="{{ openapi_raw_text }}" />
+              <button class="btn btn-primary" type="submit" {% if not project %}disabled{% endif %}>Start AI Security Analysis &rarr;</button>
+            </form>
+          </div>
+          {% else %}
+          <div style="margin-top:14px;border:1px solid #FECACA;border-radius:10px;padding:16px;background:#FEF2F2;">
+            <div style="font-size:13px;font-weight:600;color:#B91C1C;margin-bottom:6px;">&#9888; Unable to process file</div>
+            <p style="font-size:12.5px;color:#B91C1C;margin:0;">{{ openapi_validation.error }}</p>
+            <p style="font-size:11.5px;color:#B91C1C;margin-top:8px;opacity:0.8;">Supported formats: JSON, YAML. Try choosing another file above.</p>
+          </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      {% if run_log %}
+      <div style="margin-top:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        {% for step_name, summary in run_log %}
+        <div style="padding:8px 12px;font-size:12px;display:flex;justify-content:space-between;border-top:1px solid var(--border);">
+          <span style="font-weight:500;">{{ step_name }}</span>
+          <span class="mono" style="color:var(--navy-500);">{{ summary }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

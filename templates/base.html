@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" id="html-root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ThreatLens{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <script>
+    (function () {
+      var theme = localStorage.getItem("tm_theme") || "azure";
+      if (theme !== "lavender") theme = "azure";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+</head>
+<body>
+  <div class="scan-overlay" id="scan-overlay">
+    <div class="scan-overlay-box">
+      <div class="scan-spinner"></div>
+      <div style="font-size:13px;font-weight:500;color:var(--navy-800);">Running security analysis pipeline&hellip;</div>
+      <div style="font-size:11px;color:var(--navy-500);margin-top:2px;">This can take a moment depending on the LLM provider.</div>
+      <div class="scan-progress-track"><div class="scan-progress-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-collapse-btn" id="sidebar-toggle" title="Collapse sidebar">&#10094;</button>
+      <div class="sidebar-header">
+        <div class="sidebar-logo-dot">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.5L4.5 5.5V11.2C4.5 16.4 7.9 21.2 12 22.5C16.1 21.2 19.5 16.4 19.5 11.2V5.5L12 2.5Z"
+                  stroke="white" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M8.7 12.1L10.8 14.2L15.3 9.4" stroke="white" stroke-width="1.7"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="sidebar-title threatlens-logo-text">ThreatLens</div>
+          <div class="sidebar-subtitle">threat &rarr; test &rarr; risk &rarr; report</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        {% set nav_items = [
+          ("/", "Dashboard", "&#9698;"),
+          ("/system-analysis", "System Analysis", "&#9636;"),
+          ("/assets", "Asset Discovery", "&#9670;"),
+          ("/threats", "Threat Modeling", "&#9650;"),
+          ("/security-pipeline", "Security Pipeline", "&#9672;"),
+          ("/traceability", "Traceability", "&#8734;"),
+          ("/knowledge-base", "Knowledge Base", "&#9638;"),
+          ("/reports", "Reports", "&#9640;"),
+          ("/settings", "Settings", "&#9678;"),
+        ] %}
+        {% for href, label, icon in nav_items %}
+        <a class="sidebar-link {% if request.path == href or (href != '/' and request.path.startswith(href)) %}active{% endif %}" href="{{ href }}" title="{{ label }}">
+          <span class="sidebar-icon">{{ icon | safe }}</span><span class="sidebar-label">{{ label }}</span>
+        </a>
+        {% endfor %}
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-text">
+        {% if project %}
+          <div style="text-transform:uppercase;font-size:10px;color:var(--navy-500);margin-bottom:4px;">Active project</div>
+          <div class="sidebar-project-name">{{ project.name }}</div>
+          {% if project.authorized_for_active_testing %}
+            <span class="badge-auth-yes">Authorized for testing</span>
+          {% else %}
+            <span class="badge-auth-no">Not authorized yet</span>
+          {% endif %}
+        {% else %}
+          <span style="color:var(--navy-500);">No project selected</span>
+        {% endif %}
+        </div>
+      </div>
+    </aside>
+
+    <div class="content-wrap">
+      <div class="topbar">
+        <div>
+          <div class="breadcrumb">
+            <a href="/">ThreatLens</a>
+            {% if project %} / <a href="/settings">{{ project.name }}</a>{% endif %}
+            {% block breadcrumb_extra %}{% endblock %}
+          </div>
+          <div class="topbar-title">
+            {% for href, label, icon in nav_items %}
+              {% if request.path == href or (href != '/' and request.path.startswith(href)) %}{{ label }}{% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if project %}
+        <div class="auth-indicator {{ 'auth-indicator-on' if project.authorized_for_active_testing else 'auth-indicator-off' }}"
+             title="{% if project.authorized_for_active_testing %}Controlled testing is authorized for this project. Allowlisted targets: {{ project.allowlisted_targets | join(', ') if project.allowlisted_targets else 'localhost only' }}{% else %}This project has NOT been authorized for active testing — no security test can execute until you submit the authorization statement in Settings.{% endif %}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {% if project.authorized_for_active_testing %}
+            <path d="M12 2.5L4.5 5.5V11.2C4.5 16.4 7.9 21.2 12 22.5C16.1 21.2 19.5 16.4 19.5 11.2V5.5L12 2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M8.7 12.1L10.8 14.2L15.3 9.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            {% else %}
+            <path d="M12 9v4M12 17h.01M10.3 3.9L2.6 17.5c-.6 1 .1 2.3 1.3 2.3h16.2c1.2 0 1.9-1.3 1.3-2.3L13.7 3.9c-.6-1-2.1-1-2.7 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            {% endif %}
+          </svg>
+          <span>{{ "Authorized for Testing" if project.authorized_for_active_testing else "Not Authorized" }}</span>
+        </div>
+        {% endif %}
+
+        <div class="topbar-controls">
+          <form class="topbar-search" action="/threats" method="get" title="Search threats by title">
+            <span class="topbar-search-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <input type="text" name="q" id="global-search" placeholder="Search threats..." value="{{ request.args.get('q', '') }}" />
+            <span class="topbar-kbd">/</span>
+          </form>
+
+          {% if project %}
+          <div class="export-menu">
+            <button class="icon-btn" id="export-toggle" title="Export report">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3V15M12 15L7 10M12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 17V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="export-dropdown" id="export-dropdown">
+              <a href="/reports/download/pdf">Export as PDF</a>
+              <a href="/reports/download/json">Export as JSON</a>
+              <a href="/reports/download/csv">Export as CSV</a>
+            </div>
+          </div>
+          {% endif %}
+
+          <button class="icon-btn" id="theme-toggle" title="Switch Azure/Lavender theme">
+            <span id="theme-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 2.5V5M12 19V21.5M4.2 4.2L6 6M18 18L19.8 19.8M2.5 12H5M19 12H21.5M4.2 19.8L6 18M18 6L19.8 4.2"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+
+          {% if current_user %}
+          <div class="export-menu">
+            <button class="icon-btn" id="profile-toggle" title="{{ current_user.email }} ({{ current_user.role.value }})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/>
+                <path d="M4.5 20C5.5 16 8.4 14 12 14C15.6 14 18.5 16 19.5 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="export-dropdown" id="profile-dropdown">
+              <div style="padding:9px 14px;font-size:11.5px;color:var(--navy-500);border-bottom:1px solid var(--border);">
+                {{ current_user.email }}<br /><span style="color:var(--accent-600);font-weight:600;">{{ current_user.role.value }}</span>
+              </div>
+              {% if current_user.role.value == "ADMIN" %}<a href="/admin/users">User Management</a>{% endif %}
+              <form method="post" action="/logout" style="margin:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" style="width:100%;text-align:left;background:none;border:none;padding:9px 14px;font-size:12.5px;cursor:pointer;color:var(--navy-800);">Sign Out</button>
+              </form>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <main class="main">
+        {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+        {% if message %}<div class="alert alert-info">{{ message }}</div>{% endif %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

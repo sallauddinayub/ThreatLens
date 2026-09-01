@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}User Management - ThreatLens{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>User Management</h1>
+    <div class="subtitle">Administrative function - visible and reachable only to ADMIN-role accounts, enforced server-side.</div>
+  </div>
+</div>
+
+<div class="panel" style="overflow-x:auto;">
+  <table class="data-table">
+    <thead><tr>
+      <th>Email</th><th>Full Name</th><th>Role</th><th>Created</th><th>Failed Logins</th><th>Locked</th>
+    </tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.email }}</td>
+        <td>{{ u.full_name or "-" }}</td>
+        <td><span class="badge" style="background:{{ 'var(--accent-50)' if u.role.value == 'ADMIN' else 'rgba(20,33,61,0.04)' }};color:{{ 'var(--accent-600)' if u.role.value == 'ADMIN' else 'var(--navy-700)' }};border-color:transparent;">{{ u.role.value }}</span></td>
+        <td class="mono" style="font-size:11px;">{{ u.created_at | ist("%Y-%m-%d %H:%M") }}</td>
+        <td>{{ u.failed_login_attempts or 0 }}</td>
+        <td>
+          {% if u.locked_until %}<span class="badge status-INVALID">Locked</span>{% else %}<span style="color:var(--navy-500);">-</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Asset Discovery - ThreatLens{% endblock %}
+{% block content %}
+
+{% if not project %}
+  <p style="color:var(--navy-600);">Select or create a project in <a href="/settings" style="color:var(--accent-600);">Settings</a> first.</p>
+{% else %}
+  <div class="page-header">
+    <div><div class="subtitle" style="font-size:14px;">{{ assets|length }} assets discovered - click a node to inspect it</div></div>
+  </div>
+
+  <div class="graph-layout">
+    <div class="panel graph-panel" id="graph-panel">
+      <button type="button" class="graph-fit-btn" id="graph-fit-btn">&#8862; Fit to View</button>
+      {{ graph_svg | safe }}
+    </div>
+    <div class="panel inspector">
+      <div class="graph-legend-inline">
+        <div style="font-weight:600;color:var(--navy-700);margin-bottom:6px;">Asset types</div>
+        {% for type, color in legend %}
+        <div class="legend-item"><span class="legend-dot" style="background:{{ color }};"></span><span title="{{ type }}">{{ type }}</span></div>
+        {% endfor %}
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:6px;color:var(--navy-500);font-size:10px;">
+          Filled = Critical/High criticality &middot; Outlined = Medium/Low
+        </div>
+      </div>
+      <div id="inspector-content">
+        <div class="inspector-placeholder">Click any node in the graph to inspect it here.</div>
+      </div>
+    </div>
+  </div>
+
+  <script id="asset-node-meta" type="application/json">{{ node_meta_json | safe }}</script>
+  <script id="threats-data" type="application/json">{{ threats_json | safe }}</script>
+{% endif %}
+
+{% endblock %}

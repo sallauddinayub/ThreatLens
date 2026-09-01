@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - ThreatLens{% endblock %}
+{% block content %}
+
+{% if not project %}
+  <div class="empty-state panel">
+    <h2>No project selected yet</h2>
+    <p>Head to Settings to create a project, authorize it for testing, and run the security analysis pipeline.</p>
+    <a class="btn btn-primary" href="/settings">Go to Settings</a>
+  </div>
+{% elif threats|length == 0 %}
+  <div class="page-header">
+    <div><h1>{{ project.name }}</h1><div class="subtitle">Stage: {{ project.stage }}</div></div>
+    {% include "_stepper.html" %}
+  </div>
+  <div class="empty-state panel">
+    <h2>No threats yet</h2>
+    <p>Run the security analysis pipeline from Settings to generate a threat model for this project.</p>
+    <a class="btn btn-primary" href="/settings">Go to Settings</a>
+  </div>
+{% else %}
+  <div class="page-header">
+    <div><h1>{{ project.name }}</h1><div class="subtitle">Stage: {{ project.stage }}{% if last_analyzed %} &middot; Last analyzed: {{ last_analyzed | ist }}{% endif %}</div></div>
+    {% include "_stepper.html" %}
+  </div>
+
+  <div class="kpi-grid">
+    <a class="kpi-card kpi-card-link" href="/assets"><div class="kpi-label">Total Assets</div><div class="kpi-value">{{ total_assets }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/threats"><div class="kpi-label">Total Threats</div><div class="kpi-value">{{ threats|length }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/threats?risk=Critical"><div class="kpi-label">Critical Threats</div><div class="kpi-value" style="color:var(--risk-critical)">{{ risk_distribution.get("Critical", 0) }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/threats?risk=High"><div class="kpi-label">High Threats</div><div class="kpi-value" style="color:var(--risk-high)">{{ risk_distribution.get("High", 0) }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/traceability"><div class="kpi-label">Security Tests</div><div class="kpi-value">{{ test_stats.total }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/traceability"><div class="kpi-label">Validated Tests</div><div class="kpi-value" style="color:#047857">{{ test_stats.valid }}</div></a>
+    <a class="kpi-card kpi-card-link" href="/traceability"><div class="kpi-label">Failed Tests</div><div class="kpi-value" style="color:var(--risk-critical)">{{ test_stats.failed_executions }}</div></a>
+    <div class="kpi-card" style="border-top-color:{{ posture_color }};">
+      <div class="kpi-label">Security Posture</div>
+      <div class="kpi-value">{{ posture_score }}<span style="font-size:13px;color:var(--navy-500);">/100</span></div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:var(--navy-500);margin-top:-12px;margin-bottom:20px;">
+    Security Posture is a project-defined analytical score calculated from this project's own risk distribution and test
+    validation rate - it is <strong>not</strong> an official industry certification or benchmark score.
+    Click any card above to see the underlying assets/threats/tests.
+  </p>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Test Coverage</h2></div>
+    <div class="panel-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;">
+      <div>
+        <div class="kpi-label">Threat Coverage</div>
+        <div class="kpi-value">{{ coverage.threats_with_tests }} / {{ coverage.total_threats }}</div>
+        <div style="font-size:11px;color:var(--navy-500);">threats with at least one generated test</div>
+      </div>
+      <div>
+        <div class="kpi-label">Test Validation Rate</div>
+        <div class="kpi-value">{{ coverage.valid_tests }} / {{ coverage.total_tests }}</div>
+        <div style="font-size:11px;color:var(--navy-500);">tests passed structural validation</div>
+      </div>
+      <div>
+        <div class="kpi-label">Critical Threat Test Coverage</div>
+        <div class="kpi-value">{{ coverage.critical_coverage_pct }}%</div>
+        <div style="font-size:11px;color:var(--navy-500);">critical-risk threats with a validated test</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="panel">
+      <div class="panel-header"><h2>STRIDE Distribution</h2></div>
+      <div class="panel-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;">
+        {{ stride_chart_svg | safe }}
+        <div style="font-size:12px;">
+          {% for cat, color in stride_legend %}
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="width:11px;height:11px;border-radius:50%;background:{{ color }};display:inline-block;flex-shrink:0;"></span>
+            <span style="color:var(--navy-700);">{{ cat }}</span>
+            <span style="color:var(--navy-500);margin-left:auto;padding-left:10px;">{{ stride_counts_display.get(cat, 0) }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><h2>Risk Distribution</h2></div>
+      <div class="panel-body" style="display:flex;justify-content:center;">{{ risk_chart_svg | safe }}</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Pipeline Activity</h2>
+      <span style="font-size:11px;color:var(--navy-500);">Most recent pipeline step runs for this project</span>
+    </div>
+    <div style="max-height:220px;overflow-y:auto;">
+      {% for run in recent_pipeline_runs %}
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 18px;border-top:1px solid var(--border);font-size:12px;">
+        <span class="pipeline-status-dot pipeline-status-{{ run.status.value }}"></span>
+        <span style="font-weight:500;min-width:200px;">{{ run.step_name }}</span>
+        <span style="color:var(--navy-500);min-width:150px;">{{ run.stage.value }}</span>
+        <span class="badge status-{{ run.status.value }}">{{ run.status.value }}</span>
+        <span style="color:var(--navy-500);margin-left:auto;" title="{{ run.started_at }}">
+          {{ (run.finished_at | ist("%H:%M:%S")) if run.finished_at else (run.started_at | ist("%H:%M:%S")) }}
+        </span>
+      </div>
+      {% else %}
+      <p style="padding:18px;color:var(--navy-500);font-size:13px;">No pipeline runs recorded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Risk Heatmap</h2><span style="font-size:11px;color:var(--navy-500);">Asset &times; STRIDE category</span></div>
+    <div class="panel-body" style="overflow-x:auto;">
+      <table style="border-collapse:separate;border-spacing:4px;font-size:11px;">
+        <thead><tr>
+          <th style="text-align:left;color:var(--navy-600);padding-right:12px;">Asset</th>
+          {% for cat in stride_categories %}<th style="font-family:monospace;color:var(--navy-600);">{{ cat[0] }}</th>{% endfor %}
+        </tr></thead>
+        <tbody>
+          {% for asset_name, row in heatmap.items() %}
+          <tr>
+            <td style="white-space:nowrap;color:var(--navy-700);">{{ asset_name }}</td>
+            {% for cat in stride_categories %}
+              {% set cell = row.get(cat) %}
+              <td>
+                {% if cell %}
+                <a href="/threats/{{ cell.id }}" class="heatmap-cell" style="background:{{ cell.color }};" title="{{ cell.title }} - {{ '%.2f' | format(cell.risk_score) }}">{{ '%.1f' | format(cell.risk_score) }}</a>
+                {% else %}
+                <div class="heatmap-cell heatmap-empty"></div>
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--navy-500);margin-top:8px;">Cell = highest risk score for that asset &times; STRIDE category. Click a cell to open the threat.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Highest-Risk Threats</h2>
+      <a href="/threats" style="font-size:12px;color:var(--accent-600);font-weight:500;">View all &rarr;</a>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>ID</th><th>Title</th><th>STRIDE</th><th>Asset</th><th>Risk Score</th></tr></thead>
+      <tbody>
+        {% for t in top_threats %}
+        <tr>
+          <td class="mono">{{ t.display_id }}</td>
+          <td><a href="/threats/{{ t.id }}" style="color:var(--navy-800);">{{ t.title }}</a></td>
+          <td>{{ t.stride_category }}</td>
+          <td>{{ t.affected_asset or "-" }}</td>
+          <td class="mono">{{ "%.2f" | format(t.risk_score) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,191 @@
+[
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Valid Accounts",
+    "identifier": "T1078",
+    "url": "https://attack.mitre.org/techniques/T1078/",
+    "content": "Adversaries obtain and abuse credentials of existing accounts to gain initial access, maintain persistence, or escalate privileges, blending in with normal usage patterns because the activity uses legitimate credentials rather than exploiting a software flaw."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Exploit Public-Facing Application",
+    "identifier": "T1190",
+    "url": "https://attack.mitre.org/techniques/T1190/",
+    "content": "Adversaries attempt to exploit a weakness in an internet-facing host or system, such as an API or web application, to gain initial access. This includes exploiting logic flaws, injection points, or improper authorization checks exposed by the application."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Data from Information Repositories",
+    "identifier": "T1213",
+    "url": "https://attack.mitre.org/techniques/T1213/",
+    "content": "Adversaries collect data from internal repositories such as databases or shared drives after gaining access, often by abusing an authorized data-access path (such as an API) rather than exfiltrating raw storage."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Endpoint Denial of Service",
+    "identifier": "T1499",
+    "url": "https://attack.mitre.org/techniques/T1499/",
+    "content": "Adversaries perform Denial of Service attacks to degrade or block the availability of targeted services, for example by sending a high volume of requests to an endpoint that lacks rate limiting or resource caps."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Account Manipulation",
+    "identifier": "T1098",
+    "url": "https://attack.mitre.org/techniques/T1098/",
+    "content": "Adversaries manipulate account permissions, credentials, or profile properties to maintain access or escalate privileges, which in an API context can occur through mass-assignment flaws that permit writing to privileged fields."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Data from Cloud Storage",
+    "identifier": "T1530",
+    "url": "https://attack.mitre.org/techniques/T1530/",
+    "content": "Adversaries access data from cloud storage services such as object storage buckets, often because the storage resource's access control was misconfigured to allow public or overly broad read access. This technique does not require compromising the application itself; a misconfigured bucket permission is sufficient. It is frequently the root cause behind large-scale data exposure incidents involving customer records, backups, or internal documents left in publicly accessible storage."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Data Manipulation",
+    "identifier": "T1565",
+    "url": "https://attack.mitre.org/techniques/T1565/",
+    "content": "Adversaries insert, delete, or modify data in a way that impacts the integrity of business processes, decision-making, or user trust, without necessarily aiming to exfiltrate the data. In an API or e-commerce context, this technique covers tampering with transaction values, order quantities, or account balances at the application layer, distinct from directly modifying a database. Detection relies on transaction-level integrity checks and audit logging that can reveal a value that does not match its expected derivation."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Impair Defenses",
+    "identifier": "T1562",
+    "url": "https://attack.mitre.org/techniques/T1562/",
+    "content": "Adversaries disable or interfere with security-relevant logging, monitoring, or alerting mechanisms to operate without detection. In an application context, this can be as simple as an attacker exploiting a code path that is known to be unlogged, effectively achieving the same outcome as disabling a logging system without needing privileged access to do so. This technique is why insufficient or inconsistent audit logging (CWE-778) is treated as a security weakness in its own right, not merely an operational inconvenience."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Phishing",
+    "identifier": "T1566",
+    "url": "https://attack.mitre.org/techniques/T1566/",
+    "content": "Adversaries send phishing messages to gain access to victim systems, typically as an initial access vector rather than a technique against the application itself. Messages may contain malicious attachments or links designed to deliver malware or harvest credentials through a spoofed login page. This technique is relevant to application threat modeling primarily where an application's own communication features (notifications, invite emails) could be abused to send convincing phishing content on the application's behalf."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Command and Scripting Interpreter",
+    "identifier": "T1059",
+    "url": "https://attack.mitre.org/techniques/T1059/",
+    "content": "Adversaries abuse command and script interpreters to execute commands, scripts, or binaries, often as the direct result of a command-injection or code-injection vulnerability in a target application. Once an interpreter is reachable, an attacker gains a general-purpose execution capability far beyond the original vulnerable feature, making this technique a common follow-on step after any injection-class finding."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Brute Force",
+    "identifier": "T1110",
+    "url": "https://attack.mitre.org/techniques/T1110/",
+    "content": "Adversaries use brute force techniques to gain access to accounts when passwords are unknown, or to obtain password hashes when only the hash is known. This includes simple credential guessing, password spraying across many accounts with a small set of common passwords to avoid lockout thresholds, and credential stuffing using breached username/password pairs from other services. Rate limiting and account lockout are the primary application-level mitigations."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Unsecured Credentials",
+    "identifier": "T1552",
+    "url": "https://attack.mitre.org/techniques/T1552/",
+    "content": "Adversaries search for credentials stored in insecure locations such as configuration files, source code repositories, environment variables, or command history, rather than attempting to crack or guess them. This technique is a common follow-on after gaining any level of code or file-system access, and is why hard-coded credentials (CWE-798) and insufficiently protected credential storage are treated as significant weaknesses even absent a direct exploitation path of their own."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Account Discovery",
+    "identifier": "T1087",
+    "url": "https://attack.mitre.org/techniques/T1087/",
+    "content": "Adversaries attempt to enumerate valid accounts, usernames, or email addresses on a target system or application, often as reconnaissance before a credential-based attack. In a web application, this frequently exploits verbose error messages that reveal whether a given username or email exists (distinguishing 'invalid password' from 'no such user'), which is why authentication error messages are expected to be generic and identical regardless of which part of a login attempt failed."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Exfiltration Over Web Service",
+    "identifier": "T1567",
+    "url": "https://attack.mitre.org/techniques/T1567/",
+    "content": "Adversaries exfiltrate data using an existing, legitimate external web service rather than their primary command-and-control channel, taking advantage of the fact that traffic to well-known cloud or web services often blends in with legitimate traffic and may not be scrutinized. This is relevant to application design when a compromised component has outbound network access to arbitrary destinations, underscoring the value of restricting egress to only the specific external hosts a service genuinely needs to reach."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Data Encrypted for Impact",
+    "identifier": "T1486",
+    "url": "https://attack.mitre.org/techniques/T1486/",
+    "content": "Adversaries encrypt data on target systems or deny access to it by encrypting files, disks, or database contents, typically to extort payment for a decryption capability. In the context of an application's data layer, this underscores the value of tested, immutable backups that are not directly reachable or overwritable by the same credentials the application itself uses, so that a compromise of the application cannot also destroy its recovery path."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Data Destruction",
+    "identifier": "T1485",
+    "url": "https://attack.mitre.org/techniques/T1485/",
+    "content": "Adversaries destroy data and files on specific systems or in large numbers to interrupt availability, distinct from encryption for ransom in that the intent is disruption rather than extortion. An application-level parallel is an authenticated user or compromised account being able to bulk-delete records with no soft-delete, versioning, or confirmation safeguard, converting a single compromised credential into an unrecoverable data-loss event."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Active Scanning",
+    "identifier": "T1595",
+    "url": "https://attack.mitre.org/techniques/T1595/",
+    "content": "Adversaries actively probe or scan victim infrastructure to gather information used to plan further activity, such as enumerating open ports, exposed endpoints, or technology fingerprints from response headers and error pages. Reducing the amount of information an application leaks in its default responses (server banners, verbose error content, unnecessary exposed endpoints) directly reduces what this reconnaissance step can learn."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Ingress Tool Transfer",
+    "identifier": "T1105",
+    "url": "https://attack.mitre.org/techniques/T1105/",
+    "content": "Adversaries transfer additional tools or files from an external system into a compromised environment to support further objectives, such as downloading a web shell after gaining initial code execution through an application vulnerability. Restricting outbound network access from application servers to only the specific destinations they legitimately need reduces the practicality of this follow-on step."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Obfuscated Files or Information",
+    "identifier": "T1027",
+    "url": "https://attack.mitre.org/techniques/T1027/",
+    "content": "Adversaries encode, encrypt, or otherwise obfuscate their tools, payloads, or command-and-control traffic to make detection and analysis more difficult, for example base64-encoding a malicious payload delivered through an otherwise-legitimate-looking upload or parameter. Application-level file-content validation that inspects decoded content rather than trusting a superficial format check is one relevant defense."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Remote Services",
+    "identifier": "T1021",
+    "url": "https://attack.mitre.org/techniques/T1021/",
+    "content": "Adversaries use legitimate remote-access services such as SSH, RDP, or a web application's own administrative interface to move within an environment using valid credentials they have already obtained. This underscores why administrative interfaces deserve additional protections such as multi-factor authentication and IP allowlisting beyond what is applied to ordinary user-facing functionality."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Create Account",
+    "identifier": "T1136",
+    "url": "https://attack.mitre.org/techniques/T1136/",
+    "content": "Adversaries create a new account, sometimes with elevated privileges, to maintain access to a victim environment, for example by abusing an admin-user-creation endpoint that does not properly verify the caller's own privilege level before honoring the requested role for the new account. Auditing account-creation events and requiring re-verification of the creator's privilege at the point of creation, not just at initial login, mitigates this."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Abuse Elevation Control Mechanism",
+    "identifier": "T1548",
+    "url": "https://attack.mitre.org/techniques/T1548/",
+    "content": "Adversaries circumvent mechanisms designed to control elevation of privileges, gaining higher-level permissions on a system or within an application than were originally granted. In a web-application context this maps directly to Broken Function Level Authorization and Improper Privilege Management findings, where a lower-privileged, authenticated user reaches an endpoint or action intended only for administrators."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Application Layer Protocol",
+    "identifier": "T1071",
+    "url": "https://attack.mitre.org/techniques/T1071/",
+    "content": "Adversaries communicate using an application-layer protocol such as HTTP, HTTPS, or DNS to blend command-and-control traffic in with expected, legitimate traffic and avoid detection or network filtering. This is why traffic-content inspection and anomaly detection, not just protocol/port allowlisting, are necessary layers of network defense around any application that legitimately makes outbound HTTP calls."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Exfiltration Over C2 Channel",
+    "identifier": "T1041",
+    "url": "https://attack.mitre.org/techniques/T1041/",
+    "content": "Adversaries steal data by exfiltrating it over an existing command-and-control channel, rather than using a separate channel dedicated only to exfiltration, simplifying their tooling at the cost of making the exfiltration traffic somewhat easier to correlate with other malicious command-and-control activity if that channel is already being monitored."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Network Denial of Service",
+    "identifier": "T1498",
+    "url": "https://attack.mitre.org/techniques/T1498/",
+    "content": "Adversaries perform network denial-of-service attacks to degrade or block the availability of a targeted resource, such as flooding an API endpoint with requests intended to exhaust connection pools, bandwidth, or compute resources rather than exploiting a logic flaw. Rate limiting, request size caps, and upstream traffic-scrubbing services are the primary mitigations at the application and network edge."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "OS Credential Dumping",
+    "identifier": "T1003",
+    "url": "https://attack.mitre.org/techniques/T1003/",
+    "content": "Adversaries attempt to dump credentials stored in an operating system or software's memory or on-disk storage, such as extracting cached credentials or hashed passwords from a compromised host to enable further lateral movement. Applications reduce this technique's value by never holding a user's plaintext password in memory longer than necessary and using a properly slow, salted hash for any stored credential material."
+  },
+  {
+    "source": "MITRE ATT&CK",
+    "title": "Exploitation of Remote Services",
+    "identifier": "T1210",
+    "url": "https://attack.mitre.org/techniques/T1210/",
+    "content": "Adversaries exploit a vulnerability in a remote service, such as an internal API, database service, or management interface, to gain access to a system after already having some level of network access, distinct from Exploit Public-Facing Application in that the target here is typically an internal, not internet-facing, service."
+  }
+]

@@ -75,7 +75,7 @@ threatmodel-platform/
 │   └── report_generator.py        # PDF/JSON/CSV generation
 │
 ├── ai/
-│   ├── llm_client.py         # provider-agnostic (openai/azure/ollama/anthropic/mock), vision-capable
+│   ├── llm_client.py         # provider-agnostic (gemini/openai/azure/ollama/anthropic/mock), vision-capable
 │   ├── prompts.py             # every prompt template, centralized
 │   └── schemas.py             # lightweight system-model validation
 │
@@ -113,7 +113,7 @@ threatmodel-platform/
 - **Fixed deterministic pipeline** (`pipeline/security_analysis_pipeline.py`)
   with a genuine, bounded retry policy for invalid-test regeneration — not
   an autonomous decision loop.
-- **Provider-agnostic LLM client** (OpenAI / Azure OpenAI / Ollama /
+- **Provider-agnostic LLM client** (Gemini / OpenAI / Azure OpenAI / Ollama /
   Anthropic / offline mock) with vision support for the diagram-upload
   input path — swap providers via one `.env` line, zero code changes.
 - **RAG grounding**: threats never assert an OWASP/CWE/MITRE mapping the
